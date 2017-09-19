@@ -224,6 +224,56 @@
         }
 
 
+        function editFeature(layer, object, type, wkt) {
+            var format = new ol.format.WKT();
+            var feature = format.readFeature(wkt);
+
+            var fillColor = '#227b23';
+            var fillOpacity = 0.3;
+            var strokeColor = '#227b23';
+            var strokeOpacity = 1.0;
+            var strokeWeight = 2.0;
+            var strokePattern = null;
+
+            var style = new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: '#ffff00',
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ff0000',
+                    width: strokeWeight,
+                    lineDash: strokePattern
+                }),
+                image: new ol.style.Circle({
+                    radius: 5,
+                    fill: new ol.style.Fill({
+                        color: '#0000ff'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#ff0000',
+                        width: 1
+                    })
+                })
+            });
+
+            feature.setStyle(style);
+
+            feature.set('command', 'edt');
+            feature.set('layer', layer);
+            feature.set('object', object);
+
+            global.editFeature = feature;
+
+            // addNewFeature(feature);
+            
+
+        }
+
+        function addEditFeature() {
+            global.featureOverlay.getSource().addFeature(global.editFeature);
+        }
+
+
         map.on('singleclick', function (evt) {
             var position = ol.proj.transform(evt.coordinate, 'EPSG:900913', 'EPSG:4326');
             var lng = position[0];
@@ -267,6 +317,17 @@
                       $.ajax(url)
                         .done(function (data) {
                             global.loadgeom = data;
+
+                            eval('var ef = ' + data);
+                            if (ef.success == false) {
+                                parent.endLoadingBox();
+                                alert(ef.message);
+                                return;
+                            }
+
+                            editFeature(nLayer, nObject, ef.type, ef.wkt);
+
+
                             if (global.loadinfo != null) {
                                 loadBoxDone();
                             }
@@ -323,6 +384,7 @@
 
         function toggleLayer(id) {
             var map = global.map;
+            map.removeLayer(global.featureOverlay);
             var layerID = id.substr(6);
             var layer = findLayer(layerID);
             if (layer != null) {
@@ -340,6 +402,7 @@
                 global.layers.push(layer);
                 map.addLayer(layer);
             }
+            map.addLayer(global.featureOverlay);
         }
 
 
@@ -371,6 +434,40 @@
             navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
         }
+
+        global.overlayFeatures = new ol.Collection();
+
+        global.featureOverlay = new ol.layer.Vector({
+            source: new ol.source.Vector({ features: global.overlayFeatures }),
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(0, 255, 0, 0.6)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#0000ff',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ff0000'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#500000',
+                        width: 1
+                    }),
+                }),
+                text: new ol.style.Text({
+                    text: "",
+                    fill: new ol.style.Fill({
+                        color: '#fff'
+                    })
+                })
+            })
+        });
+        
+        map.addLayer(global.featureOverlay);
+
 
         parent.onMapReady();
 

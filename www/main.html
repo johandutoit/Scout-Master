@@ -128,9 +128,23 @@
             return point;
         }
 
+        function clearCheckBox(id) {
+            if ($('#' + id).is(':checked'))
+                $('#' + id).trigger('click');
+        }
+
         function initEditPage() {
             $('#photoDelButton').hide();
-
+            $('#myImage').hide();
+            $('#commentBox').val('');
+            clearCheckBox('selVacant');
+            clearCheckBox('selNotSurv');
+            clearCheckBox('selNonErfB');
+            clearCheckBox('selPubProp');
+            clearCheckBox('selInfoAct');
+            clearCheckBox('selNotOcc');
+            clearCheckBox('selIllBuild');
+            clearCheckBox('selNatFeat');
         }
 
         function editPoint(id, lng, lat) {
@@ -289,6 +303,10 @@
                 setTimeout(function () {
                     $('#showMapButton').trigger('click');
                     endLoadingBox();
+
+                    var mapframe = window.frames['olmap'];
+                    mapframe.addEditFeature();
+
                 }, 1000);
                 /*
                 var point = savePoint();
