@@ -226,7 +226,19 @@
 
         $(document).ready(function () {
 
+            startLoadingBox();
+
             initEditPage();
+
+            $('#syncButton').click(function () {
+                startLoadingBox("Retrieving parcels...");
+                setTimeout(function () {
+                    startLoadingBox("Saving surveys...");
+                    setTimeout(function () {
+                        endLoadingBox();
+                    }, 2000);
+                }, 2000);
+            });
 
             $('#photoDelButton').click(function () {
                 $('#photoDelButton').hide();
@@ -273,12 +285,19 @@
 
 
             $('.formbtnSave').click(function () {
+                startLoadingBox("Saving parcel...");
+                setTimeout(function () {
+                    $('#showMapButton').trigger('click');
+                    endLoadingBox();
+                }, 1000);
+                /*
                 var point = savePoint();
                 if (global.pointid == 0) {
                     var mapframe = window.frames['olmap'];
                     mapframe.addPoint(point.id, point.lng, point.lat);
                 }
                 $('#showMapButton').trigger('click');
+                */
             });
 
 
@@ -478,6 +497,8 @@
 
         function onMapReady() {
             $('#layer_36822').trigger('click');
+
+            endLoadingBox();
         }
 
         function startLoadingBox(caption) {
@@ -500,7 +521,7 @@
             </h1>
 
             <a href="#layerBox" id="layerBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="bars" data-transition="pop" class="ui-btn-right">Layers</a>
-            <a href="#layerBox" id="helpBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="refresh" data-transition="pop" class="ui-btn-left">Sync</a>
+            <a id="syncButton" data-role="button"  data-icon="refresh"  class="ui-btn-left">Sync</a>
             <div data-role="popup" id="layerBox" data-theme="none" style="width: 300px">
                 <div data-role="collapsible-set" data-theme="c" data-content-theme="d">
                     <div data-role="collapsible" data-collapsed="true" style="background-color: white; padding: 0px">
@@ -1339,10 +1360,10 @@
 
         </div>
 
-        <div data-role="header" data-position="inline">
+        <div data-role="footer" data-position="fixed">
             <h5>Copyright 2017
-                <a href="#layerBox" data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left">Cancel</a>
-                <a href="#layerBox" data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right">Save</a>
+                <a href="#layerBox" data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left" style="top: -3px">Cancel</a>
+                <a href="#layerBox" data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right" style="top: -3px">Save</a>
             </h5>
         </div>
 
