@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="openlayers/ol.css?v=2" type="text/css">
     <script src="openlayers/ol-debug.js?v=2"></script>
 
+
     <style>
 
         html, body, #map {
@@ -41,6 +42,8 @@
         </p>
     </div>
     <script type="text/javascript">
+
+        
 
         var global = {
             layerWards: null,
@@ -80,7 +83,7 @@
         global.layerWards = layer = new ol.layer.Tile({
             source: new ol.source.TileWMS(({
                 url: "http://maps.mapable.co.za/maptiler/wms.aspx?v=" + version,
-                params: { 'LAYERS': '36773', 'TILED': true, 'ZOOM': 5 }
+                params: { 'LAYERS': '36822', 'TILED': true, 'ZOOM': 5 }
             }))
         });
         global.layerWards.setVisible(true);
@@ -183,11 +186,132 @@
             })
         });
 
+        function GetXAttrValue(xml, fieldName) {
+            var jData = $(xml);
+            var Fields = jData.find('Field');
+            for (var f in Fields) {
+                var field = Fields[f];
+                var atts = field.children;
+                for (var a in atts) {
+                    var attr = atts[a];
+                    if (attr.tagName == 'Name') {
+                        if (attr.textContent == fieldName) {
+                            // get value
+                            for (var a in atts) {
+                                var attr = atts[a];
+                                if (attr.tagName == 'Value') {
+                                    return attr.textContent;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        function loadBoxDone() {
+            parent.endLoadingBox();
+            var xml = global.loadinfo;
+            var key = GetXAttrValue(xml, 'GIS_KEY');
+            
+            parent.editPoint(key, global.lng, global.lat);
+
+            
+
+            
+
+        }
+
 
         map.on('singleclick', function (evt) {
             var position = ol.proj.transform(evt.coordinate, 'EPSG:900913', 'EPSG:4326');
             var lng = position[0];
             var lat = position[1];
+
+            global.lng = lng;
+            global.lat = lat;
+
+            var extent = map.getView().calculateExtent(map.getSize());
+            var ext1 = ol.proj.transform([extent[0], extent[1]], 'EPSG:900913', 'EPSG:4326');
+            var ext2 = ol.proj.transform([extent[2], extent[3]], 'EPSG:900913', 'EPSG:4326');
+
+            var z = view.getZoom();
+            var size = map.getSize();
+            var cx = size[0];
+            var cy = size[1];
+            var x1 = ext1[1];
+            var y1 = ext1[0];
+            var x2 = ext2[1];
+            var y2 = ext2[0];
+            var bounds = cx + "," + cy + "," + x1 + "," + y1 + "," + x2 + "," + y2;
+            parent.startLoadingBox();
+            global.loadgeom = null;
+            global.loadinfo = null;
+
+
+            var url = "http://maps.mapable.co.za/maphittest/hittest.aspx?ws=42&zoom=" + z + "&bounds=" + bounds + "&lat=" + lat + "&lng=" + lng + "&LAYER=36822";
+            $.ajax(url)
+              .done(function (data) {
+                  var vars = data.split(',');
+                  if (vars.length > 1) {
+                      var nLayer = parseInt(vars[0]);
+                      var nObject = parseInt(vars[1]);
+                      var x = parseFloat(vars[2]);
+                      var y = parseFloat(vars[3]);
+                      var url = 'http://maps.mapable.co.za/mapdn/loader.aspx?mode=get_feature&layer=36822&index=' + nObject;
+                      var geometry = '';
+                      global.loadobject = nObject;
+
+                      // load geom
+                      $.ajax(url)
+                        .done(function (data) {
+                            global.loadgeom = data;
+                            if (global.loadinfo != null) {
+                                loadBoxDone();
+                            }
+                        })
+                        .fail(function () {
+                            parent.endLoadingBox();
+                            alert("Failed to get feature");
+                            return;
+                        })
+
+                      // load info
+                      var url = 'http://maps.mapable.co.za/mapdn/manLayers.aspx?MODE=LIST_FIELDS&LayerID=36822&ObjectIndex=' + nObject + '&_dc=' + Math.random();
+                      $.ajax(url)
+                        .done(function (data) {
+                            global.loadinfo = data;
+                            if (global.loadgeom != null) {
+                                loadBoxDone();
+                            }
+                        })
+                        .fail(function () {
+                            parent.endLoadingBox();
+                            alert("Failed to get feature");
+                            return;
+                        })
+
+
+
+
+                  }
+                  else {
+                      parent.endLoadingBox();
+                      alert("Failed to get feature");
+                  }
+
+                  
+              })
+              .fail(function () {
+                  parent.endLoadingBox();
+                  alert("Failed to get feature");
+              })
+            
+
+            return;
+        
+
             var id = 0;
             var feature = null; //getFeaturesAtPixel(evt.pixel);
             if (feature)
@@ -241,6 +365,9 @@
             navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
         }
+
+        parent.onMapReady();
+
 
 
         // $('#track').trigger('click');

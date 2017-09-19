@@ -135,6 +135,8 @@
 
         function editPoint(id, lng, lat) {
 
+            $('#giskey').val(id);
+
             console.log(lng);
             console.log(lat);
 
@@ -474,6 +476,17 @@
             $('#fileUploadList').hide();
         }
 
+        function onMapReady() {
+            $('#layer_36822').trigger('click');
+        }
+
+        function startLoadingBox() {
+            $.mobile.loading('show', { text: 'Loading', textVisible: true });
+        }
+
+        function endLoadingBox() {
+            $.mobile.loading('hide');
+        }
 
     </script>
 
@@ -507,7 +520,7 @@
                     <div data-role="collapsible" data-collapsed="false" style="background-color: white; padding: 0px">
                         <h4>Overlays</h4>
                         <fieldset data-role="controlgroup">
-                            <label for="layer_36773">Active parcels</label><input type="checkbox" name="check-choice" id="layer_36773" class="layerSelect" />
+                            <label for="layer_36822">Active parcels</label><input type="checkbox" name="check-choice" id="layer_36822" class="layerSelect" />
                             <label for="layer_36820">Servitude areas</label><input type="checkbox" name="check-choice" id="layer_36820" class="layerSelect" />
                             <label for="layer_36821">Servitude lines</label><input type="checkbox" name="check-choice" id="layer_36821" class="layerSelect" />
                             <label for="layer_36818">EMM Boundary</label><input type="checkbox" name="check-choice" id="layer_36818" class="layerSelect" />
@@ -524,8 +537,8 @@
 
         <div data-role="footer" data-position="fixed">
             <h6>Copyright 2017</h6>
-            <a data-role="button" class="ui-btn-left" data-icon="navigation"  onclick="TrackGPS();">Track GPS</a>
-            <a href="#layerBox" id="A1" data-rel="popup" data-role="button" data-inline="true" data-icon="info" data-transition="pop" class="ui-btn-right">Help</a>
+            <a data-role="button" class="ui-btn-left" data-icon="navigation"  onclick="TrackGPS();" style="top: -3px">Track GPS</a>
+            <a href="#layerBox" id="A1" data-rel="popup" data-role="button" data-inline="true" data-icon="info" data-transition="pop" class="ui-btn-right" style="top: -3px">Help</a>
         </div>
 
         <a href="#popupDialog" id="popupDialogButton" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b" style="display: none;">Point Information</a>
@@ -543,6 +556,11 @@
         </div>
         <div role="main" class="ui-content">
             <a id="showMapButton" href="#MainView" data-transition="slideDown" class="hidden" style="display: none; visibility: hidden">Go Main Page</a>
+
+            <label for="giskey">GIS Key:</label>
+            <input type="text" readonly="readonly" id="giskey" />
+
+
             <table style="width: 100%">
                 <tr>
                     <td style="width: 49%">
