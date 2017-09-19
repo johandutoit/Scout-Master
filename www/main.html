@@ -480,8 +480,8 @@
             $('#layer_36822').trigger('click');
         }
 
-        function startLoadingBox() {
-            $.mobile.loading('show', { text: 'Loading', textVisible: true });
+        function startLoadingBox(caption) {
+            $.mobile.loading('show', { text: caption ? caption : 'Loading', textVisible: true });
         }
 
         function endLoadingBox() {
