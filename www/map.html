@@ -50,6 +50,7 @@
             layerCadastar: null,
             gpscoords: null,
             initualZoom: false,
+            skipClick: false,
             layers: []
         };
 
@@ -214,8 +215,9 @@
             parent.endLoadingBox();
             var xml = global.loadinfo;
             var key = GetXAttrValue(xml, 'GIS_KEY');
-            
-            parent.editPoint(key, global.lng, global.lat);
+
+           
+            parent.editPoint(key, global.lng, global.lat, global.clickFeature != null);
 
             
 
@@ -262,12 +264,25 @@
             feature.set('layer', layer);
             feature.set('object', object);
 
+            
+
+
             global.editFeature = feature;
+
+
 
             // addNewFeature(feature);
             
 
         }
+
+
+        function delActiveFeature() {
+                debugger;
+            global.featureOverlay.getSource().removeFeature(global.clickFeature);
+            global.interaction.getFeatures().clear();
+        }
+
 
         function addEditFeature() {
             global.featureOverlay.getSource().addFeature(global.editFeature);
@@ -275,6 +290,12 @@
 
 
         map.on('singleclick', function (evt) {
+            global.clickFeature = null;
+
+            if (global.skipClick == true) {
+                global.skipClick = false;
+                return;
+            }
             var position = ol.proj.transform(evt.coordinate, 'EPSG:900913', 'EPSG:4326');
             var lng = position[0];
             var lat = position[1];
@@ -411,7 +432,7 @@
 
             var onSuccess = function (position) {
                 parent.endLoadingBox();
-                debugger;
+                
                 var lat = parseFloat(position.coords.latitude);
                 var lng = parseFloat(position.coords.longitude);
                 var coord = ol.proj.transform([lng, lat], 'EPSG:4326', 'EPSG:900913');
@@ -467,6 +488,31 @@
         });
         
         map.addLayer(global.featureOverlay);
+
+
+        global.interaction = new ol.interaction.Select({
+            filter: function (feature, layer) {
+                if (feature.dragbox == true)
+                    return false;
+                return true;
+            },
+            condition: ol.events.condition.mouseMove
+        });
+
+        global.interaction.getFeatures().on("add", function (e) {
+            global.skipClick = true;
+            var features = global.interaction.getFeatures().getArray();
+            if (features.length == 0)
+                return;
+
+            global.clickFeature = features[0];
+        });
+
+        global.interaction.getFeatures().on("remove", function (e) {
+            
+        });
+
+        map.addInteraction(global.interaction);
 
 
         parent.onMapReady();

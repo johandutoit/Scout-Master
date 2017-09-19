@@ -147,9 +147,31 @@
             clearCheckBox('selNatFeat');
         }
 
-        function editPoint(id, lng, lat) {
+        function editPoint(id, lng, lat, existing) {
 
             $('#giskey').val(id);
+
+
+            if (existing)
+                $('#btnDelCapDiv').show();
+            else
+                $('#btnDelCapDiv').hide();
+
+            $('#btnDelCap').off();
+            $('#btnDelCap').click(function () {
+
+                startLoadingBox("Processing...");
+                setTimeout(function () {
+                    $('#showMapButton').trigger('click');
+                    endLoadingBox();
+
+                    var mapframe = window.frames['olmap'];
+                    mapframe.delActiveFeature();
+                }, 1000);
+
+            });
+
+
 
             console.log(lng);
             console.log(lat);
@@ -577,7 +599,7 @@
         <div data-role="footer" data-position="fixed">
             <h6>Copyright 2017</h6>
             <a data-role="button" class="ui-btn-left" data-icon="navigation"  onclick="TrackGPS();" style="top: -3px">Track GPS</a>
-            <a href="#layerBox" id="A1" data-rel="popup" data-role="button" data-inline="true" data-icon="info" data-transition="pop" class="ui-btn-right" style="top: -3px">Help</a>
+            <a href="#divHelp" id="A1" data-role="button" data-icon="info" class="ui-btn-right" style="top: -3px">Help</a>
         </div>
 
         <a href="#popupDialog" id="popupDialogButton" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b" style="display: none;">Point Information</a>
@@ -586,15 +608,46 @@
 
     </div>
 
+
+
+
+    <div data-role="page" data-theme="a" id="divHelp" class="hidden">
+        <div data-role="header" data-position="inline" id="div23">
+            <h1>Scout Master
+                <a data-role="button" data-inline="true" data-icon="arrow-l" class="formbtnCancel ui-btn-left">Back</a>
+            </h1>
+        </div>
+
+        <div data-role="content" data-theme="a" id="Iframe1" name="olmap" src="map.html" style="border: 0px solid red; width: 100%">
+            Scout Master Documentation<br /><br />
+            Under Construction
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <h6>Copyright 2017</h6>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
     <div data-role="page" data-theme="a" id="divCapture">
         <div data-role="header" data-position="inline" id="div3">
             <h1>Capture Point
-                <a href="#layerBox" data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left">Cancel</a>
-                <a href="#layerBox" data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right">Save</a>
+                <a data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left">Cancel</a>
+                <a data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right">Save</a>
             </h1>
         </div>
         <div role="main" class="ui-content">
             <a id="showMapButton" href="#MainView" data-transition="slideDown" class="hidden" style="display: none; visibility: hidden">Go Main Page</a>
+
+            <div id="btnDelCapDiv">
+                <a id="btnDelCap" data-role="button" data-icon="delete" class="">Delete Capture</a>
+            </div>
 
             <label for="giskey">GIS Key:</label>
             <input type="text" readonly="readonly" id="giskey" />
