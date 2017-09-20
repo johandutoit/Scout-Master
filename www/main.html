@@ -133,6 +133,18 @@
                 $('#' + id).trigger('click');
         }
 
+        function getCheckBox(id) {
+            return $('#' + id).is(':checked');
+        }
+
+        function setCheckBox(id, checked) {
+            if (checked == null)
+                checked = false;
+            if ($('#' + id).is(':checked') != checked)
+                $('#' + id).trigger('click');
+        }
+
+
         function initEditPage() {
             $('#photoDelButton').hide();
             $('#myImage').hide();
@@ -145,13 +157,26 @@
             clearCheckBox('selNotOcc');
             clearCheckBox('selIllBuild');
             clearCheckBox('selNatFeat');
+            clearCheckBox('selWaterBody');
+            clearCheckBox('selRidge');
+            clearCheckBox('selMountain');
+            clearCheckBox('selOpenSpace');
+
+            $('#myImage').attr('src', '');
+
+            $('#stbuildings').val('1');
+            $('#stbuildings').trigger('change');
+
         }
 
-        function editPoint(id, lng, lat, existing) {
+        function editPoint(atts, existing) {
 
-            $('#giskey').val(id);
+            global.atts = atts;
 
 
+            $('#giskey').val(atts['GIS_KEY']);
+
+            var existing = global.atts['status'] != null;
             if (existing)
                 $('#btnDelCapDiv').show();
             else
@@ -173,17 +198,67 @@
 
 
 
-            console.log(lng);
-            console.log(lat);
+            initEditPage();
 
-            global.pointid = id;
-            global.coordLng = lng;
-            global.coordLat = lat;
-            if (id > 0) {
-                loadPoint(id);
+
+            setCheckBox('selVacant', global.atts['selVacant']);
+            setCheckBox('selNotSurv', global.atts['selNotSurv']);
+            setCheckBox('selNonErfB', global.atts['selNonErfB']);
+            setCheckBox('selPubProp', global.atts['selPubProp']);
+            setCheckBox('selInfoAct', global.atts['selInfoAct']);
+            setCheckBox('selNotOcc', global.atts['selNotOcc']);
+            setCheckBox('selIllBuild', global.atts['selIllBuild']);
+            setCheckBox('selNatFeat', global.atts['selNatFeat']);
+            setCheckBox('selWaterBody', global.atts['selWaterBody']);
+            setCheckBox('selRidge', global.atts['selRidge']);
+            setCheckBox('selMountain', global.atts['selMountain']);
+            setCheckBox('selOpenSpace', global.atts['selOpenSpace']);
+
+            $('#stbuildings').val(global.atts['numBuildings'] ? global.atts['numBuildings'] : '1');
+            $('#stbuildings').trigger('change');
+
+            for (var b = 0; b < global.atts['numBuildings']; b++) {
+                var bk = 'b' + (b + 1) + '_';
+
+                $('#' + bk + 'stcount').val(global.atts[bk + 'stcount'] ? global.atts[bk + 'stcount'] : '1');
+                $('#' + bk + 'stcount').trigger('change');
+
+
+                for (var s = 0; s < global.atts[bk + 'stcount']; s++) {
+                    var sk = 's' + (s + 1);
+                    var name = bk + sk;
+                    if (global.atts[name + '_cat1']) {
+                        $('#' + name + 'c1').val(global.atts[name + '_cat1']);
+                        $('#' + name + 'c1').trigger('change');
+                    }
+                    if (global.atts[name + '_cat2']) {
+                        $('#' + name + 'c2').val(global.atts[name + '_cat2']);
+                        $('#' + name + 'c2').trigger('change');
+                    }
+                    if (global.atts[name + '_cat3']) {
+                        $('#' + name + 'c3').val(global.atts[name + '_cat3']);
+                        $('#' + name + 'c3').trigger('change');
+                    }
+                    if (global.atts[name + '_cat4']) {
+                        $('#' + name + 'c4').val(global.atts[name + '_cat4']);
+                        $('#' + name + 'c4').trigger('change');
+                    }
+                    
+                }
             }
 
-            initEditPage();
+            var src = global.atts['photo'];
+            if (src != null && src != '') {
+                $('#photoDelButton').show();
+                $('#myImage').attr('src', src);
+                $('#myImage').show();
+            }
+
+            $('#commentBox').val(global.atts['comment']);
+
+
+
+
 
             $('#showCapButton').trigger('click');
 
@@ -267,18 +342,32 @@
             initEditPage();
 
             $('#syncButton').click(function () {
-                startLoadingBox("Retrieving parcels...");
-                setTimeout(function () {
-                    startLoadingBox("Saving surveys...");
-                    setTimeout(function () {
-                        endLoadingBox();
-                    }, 2000);
-                }, 2000);
+
+                startLoadingBox("Syncing...");
+
+                var scout = localStorage.getItem('scout');
+                var json = localStorage.getItem('parcels');
+                var url = 'http://localhost/gsdf/mapdn/survey.aspx?mode=sync&scout=' + escape(scout) + '&json=' + escape(json);
+
+
+                $.ajax(url)
+                  .done(function (data) {
+                      var mapframe = window.frames['olmap'];
+                      mapframe.LoadParcelJSON(JSON.parse(data));
+                      endLoadingBox();
+                  })
+                  .fail(function () {
+                      endLoadingBox();
+                      alert("Failed sync");
+                      return;
+                  })
+
             });
 
             $('#photoDelButton').click(function () {
                 $('#photoDelButton').hide();
                 $('#myImage').hide();
+                $('#myImage').attr('src', '');
             });
 
 
@@ -321,13 +410,49 @@
 
 
             $('.formbtnSave').click(function () {
+
+                global.atts['status'] = 'captured';
+
+                global.atts['selVacant'] = getCheckBox('selVacant');
+                global.atts['selNotSurv'] = getCheckBox('selNotSurv');
+                global.atts['selNonErfB'] = getCheckBox('selNonErfB');
+                global.atts['selPubProp'] = getCheckBox('selPubProp');
+                global.atts['selInfoAct'] = getCheckBox('selInfoAct');
+                global.atts['selNotOcc'] = getCheckBox('selNotOcc');
+                global.atts['selIllBuild'] = getCheckBox('selIllBuild');
+                global.atts['selNatFeat'] = getCheckBox('selNatFeat');
+                global.atts['selWaterBody'] = getCheckBox('selWaterBody');
+                global.atts['selRidge'] = getCheckBox('selRidge');
+                global.atts['selMountain'] = getCheckBox('selMountain');
+                global.atts['selOpenSpace'] = getCheckBox('selOpenSpace');
+
+                global.atts['numBuildings'] = parseInt($('#stbuildings').val());
+                for (var b = 0; b < global.atts['numBuildings']; b++) {
+                    var bk = 'b' + (b + 1) + '_';
+                    global.atts[bk + 'stcount'] = parseInt($('#' + bk + 'stcount').val());
+                    for (var s = 0; s < global.atts[bk + 'stcount']; s++) {
+                        var sk = 's' + (s + 1);
+                        var name = bk + sk;
+                        global.atts[name + '_cat1'] = parseInt($('#' + name + 'c1').val());
+                        global.atts[name + '_cat2'] = parseInt($('#' + name + 'c2').val());
+                        global.atts[name + '_cat3'] = parseInt($('#' + name + 'c3').val());
+                        global.atts[name + '_cat4'] = parseInt($('#' + name + 'c4').val());
+                    }
+                }
+
+                global.atts['photo'] = $('#myImage').attr('src');
+                global.atts['comment'] = $('#commentBox').val();
+                debugger;
+
+
+
                 startLoadingBox("Saving parcel...");
                 setTimeout(function () {
                     $('#showMapButton').trigger('click');
                     endLoadingBox();
 
                     var mapframe = window.frames['olmap'];
-                    mapframe.addEditFeature();
+                    mapframe.updateEditFeature();
 
                 }, 1000);
                 /*
@@ -536,7 +661,7 @@
         }
 
         function onMapReady() {
-            $('#layer_36822').trigger('click');
+            // $('#layer_36822').trigger('click');
 
             endLoadingBox();
         }

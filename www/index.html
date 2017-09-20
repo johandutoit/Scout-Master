@@ -188,6 +188,10 @@
 
         $(document).ready(function () {
 
+            var user = localStorage.getItem('scout');
+            $('#inputEmail').val(user);
+
+
 
             $('#selNatFeat').change(updateNatFeatures);
             $('#selVacant').change(updateVacant);
@@ -385,6 +389,7 @@
         }
 
         function doSubmit() {
+            localStorage.setItem('scout', $('#inputEmail').val());
             document.location = "main.html";
             return false;
         }
