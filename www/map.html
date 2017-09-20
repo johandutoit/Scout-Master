@@ -178,7 +178,7 @@
                 global.gpscoords = coordinates;
                 if (global.initualZoom == false) {
                     view.setCenter(global.gpscoords);
-                    view.setZoom(15);
+                    view.setZoom(16);
                     global.initualZoom = true;
                 }
             }
@@ -530,7 +530,7 @@
 
 
                 view.setCenter(coord);
-                view.setZoom(15);
+                view.setZoom(16);
             };
 
             function onError(error) {
@@ -681,7 +681,7 @@
 
             var extent = [minX, minY, maxX, maxY];
             view.fit(extent);
-            view.setZoom(15);
+            view.setZoom(16);
 
             saveFeatureJSON();
         }
