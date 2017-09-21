@@ -71,6 +71,8 @@
         global.points = [];
         global.initUploader = false;
 
+
+
         function addPoint(lng, lat) {
             var point = {
                 id: global.points.length + 1,
@@ -176,7 +178,7 @@
 
             $('#giskey').val(atts['GIS_KEY']);
 
-            var existing = global.atts['status'] != null;
+            var existing = global.atts['status'] == 'captured';
             if (existing)
                 $('#btnDelCapDiv').show();
             else
@@ -187,7 +189,7 @@
 
                 startLoadingBox("Processing...");
                 setTimeout(function () {
-                    $('#showMapButton').trigger('click');
+                    history.back(1);
                     endLoadingBox();
 
                     var mapframe = window.frames['olmap'];
@@ -339,20 +341,31 @@
 
             initEditPage();
 
+            var d = new Date();
+            
+
+
             $('#syncButton').click(function () {
 
                 startLoadingBox("Syncing...");
 
                 var scout = localStorage.getItem('scout');
                 var json = localStorage.getItem('parcels');
-                var url = 'http://localhost/gsdf/mapdn/survey.aspx?mode=sync&scout=' + escape(scout) + '&json=' + escape(json);
+                // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
+                var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
 
 
-                $.ajax(url)
+                $.post(url, { mode: 'sync', scout: scout, json: json })
                   .done(function (data) {
-                      var mapframe = window.frames['olmap'];
-                      mapframe.LoadParcelJSON(JSON.parse(data));
+                      var json = JSON.parse(data);
+                      if (json.success == true) {
+                          var mapframe = window.frames['olmap'];
+                          mapframe.LoadParcelJSON(json);
+                      }
                       endLoadingBox();
+                      $('#divMsgBody').html(json.message);
+                      $('#msgPageButton').trigger('click');
+                      
                   })
                   .fail(function () {
                       endLoadingBox();
@@ -409,6 +422,10 @@
 
             $('.formbtnSave').click(function () {
 
+                if (global.atts['capdate'] == null) {
+                    global.atts['capdate'] = new Date();
+                }
+
                 global.atts['status'] = 'captured';
 
                 global.atts['selVacant'] = getCheckBox('selVacant');
@@ -446,7 +463,7 @@
 
                 startLoadingBox("Saving parcel...");
                 setTimeout(function () {
-                    $('#showMapButton').trigger('click');
+                    history.back(1);
                     endLoadingBox();
 
                     var mapframe = window.frames['olmap'];
@@ -459,14 +476,14 @@
                     var mapframe = window.frames['olmap'];
                     mapframe.addPoint(point.id, point.lng, point.lat);
                 }
-                $('#showMapButton').trigger('click');
+                history.back(1);
                 */
             });
 
 
             $('.formbtnCancel').click(function () {
 
-                $('#showMapButton').trigger('click');
+                history.back(1);
             });
 
 
@@ -753,6 +770,29 @@
 
     </div>
 
+
+    <div data-role="page" data-theme="a" id="divMessages" class="hidden">
+        <div data-role="header" data-position="inline" id="div24">
+            <h1>Scout Master
+                <a data-role="button" data-inline="true" data-icon="arrow-l" class="formbtnCancel ui-btn-left">Back</a>
+            </h1>
+            <a href="#divMessages" id="msgPageButton" style="display: none; visibility: hidden"></a>
+        </div>
+
+        <div data-role="content" data-theme="a" id="Div25" name="olmap" src="map.html" style="border: 0px solid red; width: 100%">
+            <br />
+            <br />
+            <div id="divMsgBody">
+                hello
+            </div>
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <h6>Copyright 2017</h6>
+        </div>
+
+
+    </div>
 
 
 
