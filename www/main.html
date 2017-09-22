@@ -354,8 +354,10 @@
                 // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
                 var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
 
+                
 
-                $.post(url, { mode: 'sync', scout: scout, json: json })
+
+                $.post(url, { mode: 'sync', scout: scout, json: json, version: 1 })
                   .done(function (data) {
                       var json = JSON.parse(data);
                       if (json.success == true) {
