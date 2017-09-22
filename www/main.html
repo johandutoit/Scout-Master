@@ -339,11 +339,15 @@
 
         $(document).ready(function () {
 
+            startLoadingBox("start");
+
+            alert('s1');
+
             initEditPage();
 
             var d = new Date();
             
-
+            alert('s2');
 
             $('#syncButton').click(function () {
 
@@ -377,11 +381,15 @@
 
             });
 
+            alert('s3');
+
             $('#photoDelButton').click(function () {
                 $('#photoDelButton').hide();
                 $('#myImage').hide();
                 $('#myImage').attr('src', '');
             });
+
+            alert('s4');
 
 
 
@@ -389,6 +397,7 @@
             $('#photoButton').click(function () {
 
                 debugger;
+                alert('st');
 
                 if (navigator.camera == null) {
                     onSuccess('images/ort.jpg');
@@ -413,7 +422,7 @@
             });
 
 
-
+            alert('s5');
 
             $('#selNatFeat').change(updateNatFeatures);
             $('#selVacant').change(updateVacant);
@@ -421,6 +430,7 @@
             updateNatFeatures();
             updateVacant();
 
+            alert('s6');
 
             $('.formbtnSave').click(function () {
 
@@ -482,6 +492,7 @@
                 */
             });
 
+            alert('s7');
 
             $('.formbtnCancel').click(function () {
 
@@ -508,6 +519,8 @@
                     $(this).append(new Option(item[1], item[0]));
                 });
             }
+
+            alert('s8');
 
             $(".selc1").change(function () {
                 var id = this.id;
@@ -589,6 +602,8 @@
                 showElement('devdiv', val == true);
             });
             $('#selDev').trigger("change");
+
+            alert('s9');
         });
 
         function InitImageUploader() {
