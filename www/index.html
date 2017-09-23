@@ -38,7 +38,7 @@ under the License.
 -->
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
 
-    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    
     <title>ScoutMaster</title>
     <link rel="stylesheet" href="jquerymobile/jquery.mobile-1.4.5.css" />
     <script type="text/javascript" src="jquerymobile/jquery-2.1.3.min.js"></script>
@@ -102,6 +102,8 @@ under the License.
     <script type="text/javascript">
         app.initialize();
 
+
+
         function testCam() {
 
             alert('cam: ' + navigator.camera + '!');
@@ -129,6 +131,7 @@ under the License.
         var global = {};
         global.points = [];
         global.initUploader = false;
+
 
         app.initialize();
 
@@ -211,6 +214,8 @@ under the License.
             $('#photoDelButton').hide();
             $('#myImage').hide();
             $('#commentBox').val('');
+            $('#giskeyDiv').show();
+
             clearCheckBox('selVacant');
             clearCheckBox('selNotSurv');
             clearCheckBox('selNonErfB');
@@ -236,14 +241,6 @@ under the License.
             global.atts = atts;
 
 
-            $('#giskey').val(atts['GIS_KEY']);
-
-            var existing = global.atts['status'] == 'captured';
-            if (existing)
-                $('#btnDelCapDiv').show();
-            else
-                $('#btnDelCapDiv').hide();
-
             $('#btnDelCap').off();
             $('#btnDelCap').click(function () {
 
@@ -261,6 +258,22 @@ under the License.
 
 
             initEditPage();
+
+            if (atts['GIS_KEY'] != '') {
+                $('#giskey').val(atts['GIS_KEY']);
+                $('#giskeyDiv').show();
+
+                var existing = global.atts['status'] == 'captured';
+                if (existing)
+                    $('#btnDelCapDiv').show();
+                else
+                    $('#btnDelCapDiv').hide();
+            }
+            else {
+                $('#giskeyDiv').hide();
+                $('#btnDelCapDiv').show();
+            }
+
 
 
             setCheckBox('selVacant', global.atts['selVacant']);
@@ -384,6 +397,11 @@ under the License.
             mapframe.doTrackGPS();
         }
 
+        function zoomToParcels() {
+            var mapframe = window.frames['olmap'];
+            mapframe.zoomToParcels();
+        }
+
         function updateVacant() {
             if ($('#selVacant').is(':checked'))
                 $('.notVacant').hide();
@@ -397,11 +415,30 @@ under the License.
             }
         }
 
+        function getDelList() {
+            var dellist = localStorage.getItem('deleteList');
+            if (dellist == null) {
+                localStorage.setItem('deleteList', '');
+                dellist = localStorage.getItem('deleteList');
+            }
+            return dellist;
+        }
+
+        function addDelGUID(guid) {
+            var dellist = getDelList();
+            if (dellist != '')
+                dellist += '|';
+            dellist += guid;
+            localStorage.setItem('deleteList', dellist);
+            
+        }
+
+
         $(document).ready(function () {
 
             startLoadingBox("start");
 
-            var user = localStorage.getItem('scout');
+            var user = localStorage.getItem('scout').toUpperCase();
             $('#inputEmail').val(user);
 
             initEditPage();
@@ -412,20 +449,23 @@ under the License.
 
                 startLoadingBox("Syncing...");
 
-                var scout = localStorage.getItem('scout');
+                var scout = localStorage.getItem('scout').toUpperCase();
                 var json = localStorage.getItem('parcels');
                 // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
                 var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
 
 
-
-
-                $.post(url, { mode: 'sync', scout: scout, json: json, version: 1 })
+                 var dellist = getDelList();
+                
+                //
+                // $.ajax(url + '?mode=sync&scout=' + scout + '&json=' + json + '&version=1' )
+                $.post(url, { mode: 'sync', scout: scout, json: json, version: 1, dellist: dellist })
                 .done(function (data) {
                     var json = JSON.parse(data);
                     if (json.success == true) {
                         var mapframe = window.frames['olmap'];
                         mapframe.LoadParcelJSON(json);
+                        localStorage.setItem('deleteList', '');
                     }
                     endLoadingBox();
                     $('#divMsgBody').html(json.message);
@@ -449,9 +489,6 @@ under the License.
 
             $('#photoButton').off();
             $('#photoButton').click(function () {
-
-                alert('nav: ' + navigator + '!');
-                alert('cam: ' + navigator.camera + '!');
 
                 if (navigator.camera == null) {
                     onSuccess('images/ort.jpg');
@@ -544,7 +581,8 @@ under the License.
 
 
             $('.formbtnCancel').click(function () {
-
+                var mapframe = window.frames['olmap'];
+                mapframe.cancelNewFeature();
                 history.back(1);
             });
 
@@ -676,7 +714,7 @@ under the License.
         }
 
         function doSubmit() {
-            localStorage.setItem('scout', $('#inputEmail').val());
+            localStorage.setItem('scout', $('#inputEmail').val().toUpperCase());
             $('#mainViewButton').trigger('click');
             return false;
         }
@@ -687,7 +725,7 @@ under the License.
 
 </head>
 
-<body onload="resizemapdiv();" onresize="resizemapdiv();">
+<body onload="resizemapdiv();" onresize="resizemapdiv();" >
 
     <div data-role="page" data-theme="a" id="SignInView" class="hidden">
         <div data-role="header" data-position="inline" id="div22">
@@ -710,7 +748,7 @@ under the License.
                 <input type="text" id="inputEmail" class="form-control" placeholder="user code" required autofocus  style="text-transform:uppercase">
                 <br />
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-                  <a onclick="testCam();" data-role="button" data-icon="camera" class="">Add Photo</a>
+                  
               </form>
 
 
@@ -731,8 +769,9 @@ under the License.
                 <a id="showCapButton" href="#divCapture" data-transition="slideUp" class="hidden" style="display: none; visibility: hidden">Go To Page 2</a>
             </h1>
 
-            <a href="#layerBox" id="layerBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="bars" data-transition="pop" class="ui-btn-right">Layers</a>
+            
             <a id="syncButton" data-role="button"  data-icon="refresh"  class="ui-btn-left">Sync</a>
+            <a href="#layerBox" id="layerBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="bars" data-transition="pop" class="ui-btn-right">Layers</a>
             <div data-role="popup" id="layerBox" data-theme="none" style="width: 300px">
                 <div data-role="collapsible-set" data-theme="c" data-content-theme="d">
                     <div data-role="collapsible" data-collapsed="true" style="background-color: white; padding: 0px">
@@ -769,8 +808,20 @@ under the License.
 
         <div data-role="footer" data-position="fixed">
             <h6>Copyright 2017</h6>
-            <a data-role="button" class="ui-btn-left" data-icon="navigation"  onclick="TrackGPS();" style="top: -3px">Track GPS</a>
-            <a href="#divHelp" id="A1" data-role="button" data-icon="add" class="ui-btn-right" style="top: -3px">Add Point</a>
+            <a href="#toolBox" id="A2" data-rel="popup" data-role="button" data-inline="true" data-icon="gear" data-transition="pop" class="ui-btn-left" style="top: -3px;">Tools</a>
+            <div data-role="popup" id="toolBox" data-theme="none" >
+                <div data-role="content" data-theme="a">
+                    <a onclick="TrackGPS();" data-role="button" data-icon="navigation" class="">Zoom to GPS</a>
+                    <a onclick="zoomToParcels();" data-role="button" data-icon="search" class="">Zoom to Parcels</a>
+                </div>
+            </div>
+
+            
+
+
+
+
+            <a href="#divHelp" id="A1" data-role="button" data-icon="info" class="ui-btn-right" style="top: -3px">Help</a>
         </div>
 
         <a href="#popupDialog" id="popupDialogButton" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b" style="display: none;">Point Information</a>
@@ -843,8 +894,10 @@ under the License.
                 <a id="btnDelCap" data-role="button" data-icon="delete" class="">Delete Capture</a>
             </div>
 
-            <label for="giskey">GIS Key:</label>
-            <input type="text" readonly="readonly" id="giskey" />
+            <div id="giskeyDiv">
+                <label for="giskey">GIS Key:</label>
+                <input type="text" readonly="readonly" id="giskey" />
+            </div>
 
 
             <table style="width: 100%">
@@ -925,7 +978,7 @@ under the License.
 
                 </tbody>
             </table>
-            <!-- add photo -->
+            <a id="photoButton" data-role="button" data-icon="camera" class="">Add Photo</a>
             
             <div id="photoContainer" style="background-color: #333333; height: 125px; display: none">
                 <div id="fileUploadList" style="background-color: #333333; height: 115px; overflow-x: hidden; overflow-y: scroll; border: 1px solid black; background-color: white; padding: 4px" class="hidden">

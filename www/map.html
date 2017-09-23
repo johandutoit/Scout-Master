@@ -54,6 +54,14 @@
             layers: []
         };
 
+        function genguid() {
+            function S4() {
+                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+            }
+            return (S4() + S4() + "-" + S4() + "-4" + S4().substr(0, 3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+        }
+
+
         function findLayer(id) {
             for (var i = 0; i < global.layers.length; i++) {
                 var layer = global.layers[i];
@@ -285,6 +293,21 @@
 
 
         function delActiveFeature() {
+
+            if (global.editFeature.atts['GIS_KEY'] == null || global.editFeature.atts['GIS_KEY']) {
+                var features = global.parcels.features;
+                for (var i = 0; i < features.length; i++) {
+                    var feature = features[i];
+                    if (feature.atts["guid"] == global.editFeature.atts["guid"]) {
+                        parent.addDelGUID(feature.atts["guid"]);
+                        features.splice(i, 1);
+                        LoadParcelJSON(global.parcels);
+                    }
+                }
+                return;
+            }
+
+
             var fillColor = '#227b23';
             var fillOpacity = 0.3;
             var strokeColor = '#227b23';
@@ -376,7 +399,10 @@
 
 
         map.on('singleclick', function (evt) {
-            global.clickFeature = null;
+            global.newFeature = null;
+            global.editFeature = null;
+            global.clickCoord = evt.coordinate;
+            setTimeout(testNoneClicked, 200);
             return;
 
             if (global.skipClick == true) {
@@ -588,6 +614,39 @@
             condition: ol.events.condition.mouseMove
         });
 
+        function cancelNewFeature() {
+            if (global.newFeature != null)
+                delActiveFeature();
+        }
+
+        function testNoneClicked() {
+            if (global.editFeature == null) {
+                var coord = global.clickCoord;
+                var x = coord[0];
+                var y = coord[1];
+                var s = 4;
+
+                var wkt = 'POLYGON ((';
+                wkt += (x - s) + ' ' + (y) + ',';
+                wkt += (x) + ' ' + (y - s) + ',';
+                wkt += (x + s) + ' ' + (y) + ',';
+                wkt += (x) + ' ' + (y + s) + ',';
+                wkt += (x - s) + ' ' + (y) + '))';
+               
+                var scout = localStorage.getItem('scout').toUpperCase();
+                var feature = {
+                    wkt: wkt, atts: { ID: 0, GIS_KEY: '', guid: genguid(), scout: scout }
+                };
+
+                global.parcels.features.push(feature);
+                LoadParcelJSON(global.parcels);
+                global.newFeature = global.lastFeature;
+                global.editFeature = global.lastFeature;
+                parent.editPoint(global.editFeature.atts);
+            }
+        }
+
+
         global.interaction.getFeatures().on("add", function (e) {
             global.skipClick = true;
             var features = global.interaction.getFeatures().getArray();
@@ -595,11 +654,7 @@
                 return;
 
             global.editFeature = features[0];
-
             global.interaction.getFeatures().clear();
-
-            debugger;
-
             parent.editPoint(global.editFeature.atts);
 
         });
@@ -670,6 +725,7 @@
                 var feature = features[f];
 
                 var newFeature = createFeature('', feature.wkt, feature.atts)
+                
                 var geom = newFeature.getGeometry();
                 var extent = geom.getExtent();
                 minX = Math.min(minX, extent[0]);
@@ -678,13 +734,22 @@
                 maxY = Math.max(maxY, extent[3]);
 
                 global.featureOverlay.getSource().addFeature(newFeature);
+                global.lastFeature = newFeature;
+
             }
 
             var extent = [minX, minY, maxX, maxY];
-            view.fit(extent);
-            view.setZoom(18);
+            global.zoomExtent = extent;
+            zoomToParcels();
+            
 
             saveFeatureJSON();
+        }
+
+        function zoomToParcels() {
+            view.fit(global.zoomExtent);
+            view.setZoom(18);
+
         }
 
 
@@ -698,8 +763,10 @@
                     alert("Failed to load parcels");
                 });
             }
+            else {
+                LoadParcelJSON(JSON.parse(json));
+            }
 
-            LoadParcelJSON(JSON.parse(json));
 
             // load parcels
             /***
