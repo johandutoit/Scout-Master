@@ -389,8 +389,8 @@
             $('#photoButton').off();
             $('#photoButton').click(function () {
 
-                debugger;
-                alert('st');
+                alert('nav: ' + navigator + '!');
+                alert('cam: ' + navigator.camera + '!');
 
                 if (navigator.camera == null) {
                     onSuccess('images/ort.jpg');
