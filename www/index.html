@@ -89,14 +89,13 @@ under the License.
             position: relative;
         }
 
-        .img-wrap .close {
-            cursor: pointer;
-            position: absolute;
-            top: 18px;
-            right: 0px;
-            z-index: 100;
-        }
-
+            .img-wrap .close {
+                cursor: pointer;
+                position: absolute;
+                top: 18px;
+                right: 0px;
+                z-index: 100;
+            }
     </style>
 
 
@@ -124,6 +123,557 @@ under the License.
 
         }
 </script>
+
+    <script type="text/javascript">
+
+        var global = {};
+        global.points = [];
+        global.initUploader = false;
+
+        app.initialize();
+
+
+        function addPoint(lng, lat) {
+            var point = {
+                id: global.points.length + 1,
+                lat: lat,
+                lng: lng
+            }
+            global.points.push(point);
+            return point;
+        }
+
+        function getPoint(id) {
+            for (var i = 0; i < global.points.length; i++) {
+                if (global.points[i].id == id)
+                    return global.points[i];
+            }
+            return null;
+        }
+
+        function loadPoint(id) {
+            var point = getPoint(id);
+            document.getElementById('selDev').checked = point.developed;
+            $('#selDev').trigger('change');
+            document.getElementById('selEnc').checked = point.encrouchments;
+            document.getElementById('selInf').checked = point.informalStructures;
+            $('#stcount').val(point.storeys);
+            $('#stcount').trigger('change');
+            for (var i = 1; i <= 6; i++) {
+                var cl = point.classes[i - 1];
+                $('#s' + i + 'c1').val(cl.c1);
+                $('#s' + i + 'c1').trigger("change");
+                $('#s' + i + 'c2').val(cl.c2),
+                $('#s' + i + 'c2').trigger("change");
+                $('#s' + i + 'c3').val(cl.c3),
+                $('#s' + i + 'c3').trigger("change");
+            }
+        }
+
+        function savePoint() {
+            if (global.pointid == 0)
+                point = addPoint(global.coordLng, global.coordLat);
+            else
+                point = getPoint(global.pointid);
+            point.developed = document.getElementById('selDev').checked;
+            point.encrouchments = document.getElementById('selEnc').checked;
+            point.informalStructures = document.getElementById('selInf').checked;
+            point.storeys = $('#stcount').val();
+            point.classes = [];
+            for (var i = 1; i <= 6; i++) {
+                point.classes.push({
+                    c1: $('#s' + i + 'c1').val(),
+                    c2: $('#s' + i + 'c2').val(),
+                    c3: $('#s' + i + 'c3').val()
+                });
+            }
+            return point;
+        }
+
+        function clearCheckBox(id) {
+            if ($('#' + id).is(':checked'))
+                $('#' + id).trigger('click');
+        }
+
+        function getCheckBox(id) {
+            return $('#' + id).is(':checked');
+        }
+
+        function setCheckBox(id, checked) {
+            if (checked == null)
+                checked = false;
+            if ($('#' + id).is(':checked') != checked)
+                $('#' + id).trigger('click');
+        }
+
+
+        function initEditPage() {
+            $('#photoDelButton').hide();
+            $('#myImage').hide();
+            $('#commentBox').val('');
+            clearCheckBox('selVacant');
+            clearCheckBox('selNotSurv');
+            clearCheckBox('selNonErfB');
+            clearCheckBox('selPubProp');
+            clearCheckBox('selInfoAct');
+            clearCheckBox('selNotOcc');
+            clearCheckBox('selIllBuild');
+            clearCheckBox('selNatFeat');
+            clearCheckBox('selWaterBody');
+            clearCheckBox('selRidge');
+            clearCheckBox('selMountain');
+            clearCheckBox('selOpenSpace');
+
+            $('#myImage').attr('src', '');
+
+            $('#stbuildings').val('1');
+            $('#stbuildings').trigger('change');
+
+        }
+
+        function editPoint(atts, existing) {
+
+            global.atts = atts;
+
+
+            $('#giskey').val(atts['GIS_KEY']);
+
+            var existing = global.atts['status'] == 'captured';
+            if (existing)
+                $('#btnDelCapDiv').show();
+            else
+                $('#btnDelCapDiv').hide();
+
+            $('#btnDelCap').off();
+            $('#btnDelCap').click(function () {
+
+                startLoadingBox("Processing...");
+                setTimeout(function () {
+                    history.back(1);
+                    endLoadingBox();
+
+                    var mapframe = window.frames['olmap'];
+                    mapframe.delActiveFeature();
+                }, 1000);
+
+            });
+
+
+
+            initEditPage();
+
+
+            setCheckBox('selVacant', global.atts['selVacant']);
+            setCheckBox('selNotSurv', global.atts['selNotSurv']);
+            setCheckBox('selNonErfB', global.atts['selNonErfB']);
+            setCheckBox('selPubProp', global.atts['selPubProp']);
+            setCheckBox('selInfoAct', global.atts['selInfoAct']);
+            setCheckBox('selNotOcc', global.atts['selNotOcc']);
+            setCheckBox('selIllBuild', global.atts['selIllBuild']);
+            setCheckBox('selNatFeat', global.atts['selNatFeat']);
+            setCheckBox('selWaterBody', global.atts['selWaterBody']);
+            setCheckBox('selRidge', global.atts['selRidge']);
+            setCheckBox('selMountain', global.atts['selMountain']);
+            setCheckBox('selOpenSpace', global.atts['selOpenSpace']);
+
+            $('#stbuildings').val(global.atts['numBuildings'] ? global.atts['numBuildings'] : '1');
+            $('#stbuildings').trigger('change');
+
+            for (var b = 0; b < global.atts['numBuildings']; b++) {
+                var bk = 'b' + (b + 1) + '_';
+
+                $('#' + bk + 'stcount').val(global.atts[bk + 'stcount'] ? global.atts[bk + 'stcount'] : '1');
+                $('#' + bk + 'stcount').trigger('change');
+
+
+                for (var s = 0; s < global.atts[bk + 'stcount']; s++) {
+                    var sk = 's' + (s + 1);
+                    var name = bk + sk;
+                    if (global.atts[name + '_cat1']) {
+                        $('#' + name + 'c1').val(global.atts[name + '_cat1']);
+                        $('#' + name + 'c1').trigger('change');
+                    }
+                    if (global.atts[name + '_cat2']) {
+                        $('#' + name + 'c2').val(global.atts[name + '_cat2']);
+                        $('#' + name + 'c2').trigger('change');
+                    }
+                    if (global.atts[name + '_cat3']) {
+                        $('#' + name + 'c3').val(global.atts[name + '_cat3']);
+                        $('#' + name + 'c3').trigger('change');
+                    }
+                    if (global.atts[name + '_cat4']) {
+                        $('#' + name + 'c4').val(global.atts[name + '_cat4']);
+                        $('#' + name + 'c4').trigger('change');
+                    }
+
+                }
+            }
+
+            var src = global.atts['photo'];
+            if (src != null && src != '') {
+                $('#photoDelButton').show();
+                $('#myImage').attr('src', src);
+                $('#myImage').show();
+            }
+
+            $('#commentBox').val(global.atts['comment']);
+
+
+
+
+
+            $('#showCapButton').trigger('click');
+
+
+
+
+            return;
+
+            $('#divCapture').removeClass('hidden');
+            $('#MainView').hide();
+            $('#divCapture').show();
+
+
+
+
+            /*
+            $('#popupDialogButton').trigger('click');
+            if (global.initUploader == false) {
+            setTimeout("InitImageUploader();", 200);
+            global.initUploader = true;
+            }
+            */
+
+        }
+
+
+
+        $(document).bind('mobileinit', function () {
+            $.mobile.selectmenu.prototype.options.nativeMenu = false;
+        });
+
+        function clearBaseLayers() {
+            for (var i = 0; i < baseLayers.length; i++)
+                baseLayers[i].setVisible(false);
+        }
+
+        function resizemapdiv() {
+            var wx = $(window).width();
+            var wy = $(window).height();
+            $('#olmap').height(wy - 89);
+            $('#popupDialog').width(wx * 0.8);
+        }
+
+        function showElement(id, show) {
+            if (show)
+                $('#' + id).show();
+            else
+                $('#' + id).hide();
+        }
+
+        function updateNatFeatures() {
+
+            if ($('#selNatFeat').is(':checked'))
+                $('#tbNatFeature').show();
+            else
+                $('#tbNatFeature').hide();
+        }
+
+        function TrackGPS() {
+            var mapframe = window.frames['olmap'];
+            mapframe.doTrackGPS();
+        }
+
+        function updateVacant() {
+            if ($('#selVacant').is(':checked'))
+                $('.notVacant').hide();
+            else {
+                $('.notVacant').show();
+                if ($('#selNotSurv').is(':checked'))
+                    $('.notSurveyable').hide();
+                else {
+                    $('.notSurveyable').show();
+                }
+            }
+        }
+
+        $(document).ready(function () {
+
+            startLoadingBox("start");
+
+            initEditPage();
+
+            var d = new Date();
+
+            $('#syncButton').click(function () {
+
+                startLoadingBox("Syncing...");
+
+                var scout = localStorage.getItem('scout');
+                var json = localStorage.getItem('parcels');
+                // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
+                var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
+
+
+
+
+                $.post(url, { mode: 'sync', scout: scout, json: json, version: 1 })
+                .done(function (data) {
+                    var json = JSON.parse(data);
+                    if (json.success == true) {
+                        var mapframe = window.frames['olmap'];
+                        mapframe.LoadParcelJSON(json);
+                    }
+                    endLoadingBox();
+                    $('#divMsgBody').html(json.message);
+                    $('#msgPageButton').trigger('click');
+
+                })
+                .fail(function () {
+                    endLoadingBox();
+                    alert("Failed sync");
+                    return;
+                })
+
+            });
+
+            $('#photoDelButton').click(function () {
+                $('#photoDelButton').hide();
+                $('#myImage').hide();
+                $('#myImage').attr('src', '');
+            });
+
+
+            $('#photoButton').off();
+            $('#photoButton').click(function () {
+
+                alert('nav: ' + navigator + '!');
+                alert('cam: ' + navigator.camera + '!');
+
+                if (navigator.camera == null) {
+                    onSuccess('images/ort.jpg');
+                }
+                else {
+                    navigator.camera.getPicture(onSuccess, onFail, {
+                        quality: 65,
+                        destinationType: Camera.DestinationType.FILE_URI
+                    });
+                }
+
+                function onSuccess(imageURI) {
+                    $('#photoDelButton').show();
+                    $('#myImage').attr('src', imageURI);
+                    $('#myImage').show();
+                }
+
+                function onFail(message) {
+                    alert('Failed because: ' + message);
+                }
+
+            });
+
+
+            $('#selNatFeat').change(updateNatFeatures);
+            $('#selVacant').change(updateVacant);
+            $('#selNotSurv').change(updateVacant);
+            updateNatFeatures();
+            updateVacant();
+
+            $('.formbtnSave').click(function () {
+
+                if (global.atts['capdate'] == null) {
+                    global.atts['capdate'] = new Date();
+                }
+
+                global.atts['status'] = 'captured';
+
+                global.atts['selVacant'] = getCheckBox('selVacant');
+                global.atts['selNotSurv'] = getCheckBox('selNotSurv');
+                global.atts['selNonErfB'] = getCheckBox('selNonErfB');
+                global.atts['selPubProp'] = getCheckBox('selPubProp');
+                global.atts['selInfoAct'] = getCheckBox('selInfoAct');
+                global.atts['selNotOcc'] = getCheckBox('selNotOcc');
+                global.atts['selIllBuild'] = getCheckBox('selIllBuild');
+                global.atts['selNatFeat'] = getCheckBox('selNatFeat');
+                global.atts['selWaterBody'] = getCheckBox('selWaterBody');
+                global.atts['selRidge'] = getCheckBox('selRidge');
+                global.atts['selMountain'] = getCheckBox('selMountain');
+                global.atts['selOpenSpace'] = getCheckBox('selOpenSpace');
+
+                global.atts['numBuildings'] = parseInt($('#stbuildings').val());
+                for (var b = 0; b < global.atts['numBuildings']; b++) {
+                    var bk = 'b' + (b + 1) + '_';
+                    global.atts[bk + 'stcount'] = parseInt($('#' + bk + 'stcount').val());
+                    for (var s = 0; s < global.atts[bk + 'stcount']; s++) {
+                        var sk = 's' + (s + 1);
+                        var name = bk + sk;
+                        global.atts[name + '_cat1'] = parseInt($('#' + name + 'c1').val());
+                        global.atts[name + '_cat2'] = parseInt($('#' + name + 'c2').val());
+                        global.atts[name + '_cat3'] = parseInt($('#' + name + 'c3').val());
+                        global.atts[name + '_cat4'] = parseInt($('#' + name + 'c4').val());
+                    }
+                }
+
+                global.atts['photo'] = $('#myImage').attr('src');
+                global.atts['comment'] = $('#commentBox').val();
+                debugger;
+
+
+
+                startLoadingBox("Saving parcel...");
+                setTimeout(function () {
+                    history.back(1);
+                    endLoadingBox();
+
+                    var mapframe = window.frames['olmap'];
+                    mapframe.updateEditFeature();
+
+                }, 1000);
+                /*
+                var point = savePoint();
+                if (global.pointid == 0) {
+                var mapframe = window.frames['olmap'];
+                mapframe.addPoint(point.id, point.lng, point.lat);
+                }
+                history.back(1);
+                */
+            });
+
+
+            $('.formbtnCancel').click(function () {
+
+                history.back(1);
+            });
+
+
+            $('.baseLayerSelect').click(function () {
+                var mapframe = window.frames['olmap'];
+                mapframe.selectBaseLayer(this.id);
+                $('#layerBox').popup('close');
+            });
+
+            $('.layerSelect').click(function () {
+                var mapframe = window.frames['olmap'];
+                mapframe.toggleLayer(this.id);
+                $('#layerBox').popup('close');
+            });
+
+
+            for (var i = 0; i < class1items.length; i++) {
+                var item = class1items[i];
+                $(".selc1").each(function (index) {
+                    $(this).append(new Option(item[1], item[0]));
+                });
+            }
+
+
+            $(".selc1").change(function () {
+                var id = this.id;
+                if (id == '')
+                    return;
+                var build = id.substr(0, 3);
+                var val = $(this).val();
+                var cmb = $('#' + build + id.substr(3, 2) + 'c2');
+                cmb.empty();
+                for (var i = 0; i < class2items.length; i++) {
+                    var item = class2items[i];
+                    if (item[1] == val)
+                        cmb.append(new Option(item[2], item[0]));
+                }
+                cmb.trigger("change");
+            });
+
+            $(".selc2").change(function () {
+                var id = this.id;
+                if (id == '')
+                    return;
+                var build = id.substr(0, 3);
+                var val = $(this).val();
+                var cmb = $('#' + build + id.substr(3, 2) + 'c3');
+                cmb.empty();
+                for (var i = 0; i < class3items.length; i++) {
+                    var item = class3items[i];
+                    if (item[1] == val)
+                        cmb.append(new Option(item[2], item[0]));
+                }
+                cmb.trigger("change");
+            });
+
+            $(".selc3").change(function () {
+                var id = this.id;
+                if (id == '')
+                    return;
+                var build = id.substr(0, 3);
+                var val = $(this).val();
+                var cmb = $('#' + build + id.substr(3, 2) + 'c4');
+                cmb.empty();
+                for (var i = 0; i < class4items.length; i++) {
+                    var item = class4items[i];
+                    if (item[1] == val)
+                        cmb.append(new Option(item[2], item[0]));
+                }
+                cmb.trigger("change");
+            });
+
+            $(".selc1").each(function (index) {
+                $(this).trigger("change");
+            });
+
+
+            $('.cbStoreyCount').change(function () {
+                var build = this.id.substr(0, 3);
+                var val = parseInt($(this).val());
+                showElement(build + 'st2', val >= 2);
+                showElement(build + 'st3', val >= 3);
+                showElement(build + 'st4', val >= 4);
+                showElement(build + 'st5', val >= 5);
+                showElement(build + 'st6', val >= 6);
+            });
+            $('.cbStoreyCount').trigger("change");
+
+
+            $('#stbuildings').change(function () {
+                var val = $('#stbuildings').val();
+                showElement('b2_main', val >= 2);
+                showElement('b3_main', val >= 3);
+                showElement('b4_main', val >= 4);
+                showElement('b5_main', val >= 5);
+            });
+            $('#stbuildings').trigger("change");
+
+
+            $('#selDev').change(function () {
+                var val = this.checked;
+                showElement('devdiv', val == true);
+            });
+            $('#selDev').trigger("change");
+
+        });
+
+        function closeUpload() {
+            var uploader = global.uploader;
+            uploader.splice();
+            uploader.refresh();
+            $('#fileUploadList').html('');
+            $('#fileUploadList').hide();
+        }
+
+        function onMapReady() {
+            // $('#layer_36822').trigger('click');
+
+            endLoadingBox();
+        }
+
+        function startLoadingBox(caption) {
+            $.mobile.loading('show', { text: caption ? caption : 'Loading', textVisible: true });
+        }
+
+        function endLoadingBox() {
+            $.mobile.loading('hide');
+        }
+
+    </script>
+
 
 </head>
 
