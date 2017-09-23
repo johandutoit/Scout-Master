@@ -358,10 +358,10 @@ under the License.
         }
 
         function resizemapdiv() {
-        //    var wx = $(window).width();
-        //    var wy = $(window).height();
-        //    $('#olmap').height(wy - 89);
-        //    $('#popupDialog').width(wx * 0.8);
+            var wx = $(window).width();
+            var wy = $(window).height();
+            $('#olmap').height(wy - 89);
+            $('#popupDialog').width(wx * 0.8);
         }
 
         function showElement(id, show) {
@@ -677,7 +677,7 @@ under the License.
 
 </head>
 
-<body onload="resizemapdiv();" onresize="resizemapdiv();">
+<body>
 
     <div data-role="page" data-theme="a" id="SignInView" class="hidden">
         <div data-role="header" data-position="inline" id="div22">
@@ -700,7 +700,7 @@ under the License.
                 <input type="text" id="inputEmail" class="form-control" placeholder="user code" required autofocus  style="text-transform:uppercase">
                 <br />
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-                  <a id="photoButton" data-role="button" data-icon="camera" class="">Add Photo</a>
+                  <a onclick="testCam();" data-role="button" data-icon="camera" class="">Add Photo</a>
               </form>
 
 
