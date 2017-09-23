@@ -711,6 +711,40 @@
 </head>
 <body onload="resizemapdiv();" onresize="resizemapdiv();">
 
+    <div data-role="page" data-theme="a" id="SignInView" class="hidden">
+        <div data-role="header" data-position="inline" id="div22">
+            <h1>Scout Master</h1>
+            <a href="#layerBox" id="helpBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="info"  data-transition="pop" class="ui-btn-left">Help</a>
+        </div>
+
+        <div role="main" class="ui-content">
+
+            <div class="container">
+                <div>&nbsp;</div>
+
+                <div style="text-align: center">
+                    <img src="img/logo.png" />
+                </div>
+                <br />
+
+              <form class="form-signin" onsubmit="return doSubmit();">
+                <label for="inputEmail" class="sr-only">User Code:</label>
+                <input type="text" id="inputEmail" class="form-control" placeholder="user code" required autofocus  style="text-transform:uppercase">
+                <br />
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+              </form>
+
+
+
+            </div> <!-- /container -->
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <h1>Copyright 2017</h1>
+        </div>
+    </div>
+
+
     <div data-role="page" data-theme="a" id="MainView" class="hidden">
         <div data-role="header" data-position="inline" id="divHeader">
             <h1>Scout Master
