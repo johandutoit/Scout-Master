@@ -358,10 +358,10 @@ under the License.
         }
 
         function resizemapdiv() {
-            var wx = $(window).width();
-            var wy = $(window).height();
-            $('#olmap').height(wy - 89);
-            $('#popupDialog').width(wx * 0.8);
+        //    var wx = $(window).width();
+        //    var wy = $(window).height();
+        //    $('#olmap').height(wy - 89);
+        //    $('#popupDialog').width(wx * 0.8);
         }
 
         function showElement(id, show) {
@@ -677,18 +677,955 @@ under the License.
 
 </head>
 
-<body>
-    <div class="app">
-        <h1>PhoneGap</h1>
-        <div id="deviceready" class="blink">
-            <p class="event listening">Connecting to Device</p>
-            <p class="event received">Device is Ready</p>
+<body onload="resizemapdiv();" onresize="resizemapdiv();">
+
+    <div data-role="page" data-theme="a" id="SignInView" class="hidden">
+        <div data-role="header" data-position="inline" id="div22">
+            <h1>Scout Master</h1>
+            <a href="#layerBox" id="helpBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="info"  data-transition="pop" class="ui-btn-left">Help</a>
+        </div>
+
+        <div role="main" class="ui-content">
+
+            <div class="container">
+                <div>&nbsp;</div>
+
+                <div style="text-align: center">
+                    <img src="img/logo.png" />
+                </div>
+                <br />
+
+              <form class="form-signin" onsubmit="return doSubmit();">
+                <label for="inputEmail" class="sr-only">User Code:</label>
+                <input type="text" id="inputEmail" class="form-control" placeholder="user code" required autofocus  style="text-transform:uppercase">
+                <br />
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                  <a id="photoButton" data-role="button" data-icon="camera" class="">Add Photo</a>
+              </form>
+
+
+
+            </div> <!-- /container -->
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <h1>Copyright 2017</h1>
         </div>
     </div>
-    <br />
-    <a href="spec.html">Specs</a>
-    <br />
-    <input type="button" value="testCam" onclick="testCam();" />
+
+
+    <div data-role="page" data-theme="a" id="MainView" class="hidden">
+        <div data-role="header" data-position="inline" id="divHeader">
+            <h1>Scout Master
+                <a id="showCapButton" href="#divCapture" data-transition="slideUp" class="hidden" style="display: none; visibility: hidden">Go To Page 2</a>
+            </h1>
+
+            <a href="#layerBox" id="layerBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="bars" data-transition="pop" class="ui-btn-right">Layers</a>
+            <a id="syncButton" data-role="button"  data-icon="refresh"  class="ui-btn-left">Sync</a>
+            <div data-role="popup" id="layerBox" data-theme="none" style="width: 300px">
+                <div data-role="collapsible-set" data-theme="c" data-content-theme="d">
+                    <div data-role="collapsible" data-collapsed="true" style="background-color: white; padding: 0px">
+                        <h4>Base Layers</h4>
+                        <fieldset data-role="controlgroup">
+
+                            <input type="radio" name="radio-choice" id="MQO_STD" class="baseLayerSelect" checked="checked" />
+                            <label for="MQO_STD">MapQuest Open</label>
+                            <input type="radio" name="radio-choice" id="OSM_STD" class="baseLayerSelect" />
+                            <label for="OSM_STD">OSM - Standard</label>
+                            <input type="radio" name="radio-choice" id="OSM_CYL" class="baseLayerSelect" />
+                            <label for="OSM_CYL">OSM - Cycle Map</label>
+                            <input type="radio" name="radio-choice" id="OSM_TRN" class="baseLayerSelect" />
+                            <label for="OSM_TRN">OSM - Transport</label>
+                        </fieldset>
+                    </div>
+                    <div data-role="collapsible" data-collapsed="false" style="background-color: white; padding: 0px">
+                        <h4>Overlays</h4>
+                        <fieldset data-role="controlgroup">
+                            <label for="layer_36822">Active parcels</label><input type="checkbox" name="check-choice" id="layer_36822" class="layerSelect" />
+                            <label for="layer_36820">Servitude areas</label><input type="checkbox" name="check-choice" id="layer_36820" class="layerSelect" />
+                            <label for="layer_36821">Servitude lines</label><input type="checkbox" name="check-choice" id="layer_36821" class="layerSelect" />
+                            <label for="layer_36818">EMM Boundary</label><input type="checkbox" name="check-choice" id="layer_36818" class="layerSelect" />
+                            <label for="layer_36819">Customer Care Areas</label><input type="checkbox" name="check-choice" id="layer_36819" class="layerSelect" />
+                            <label for="layer_36824">Sectional Title Units</label><input type="checkbox" name="check-choice" id="layer_36824" class="layerSelect" />
+                            <label for="layer_36876">Addresses</label><input type="checkbox" name="check-choice" id="layer_36876" class="layerSelect" />
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <iframe data-role="content" data-theme="a" id="olmap" name="olmap" src="map.html" style="border: 0px solid red; width: 100%"></iframe>
+
+        <div data-role="footer" data-position="fixed">
+            <h6>Copyright 2017</h6>
+            <a data-role="button" class="ui-btn-left" data-icon="navigation"  onclick="TrackGPS();" style="top: -3px">Track GPS</a>
+            <a href="#divHelp" id="A1" data-role="button" data-icon="add" class="ui-btn-right" style="top: -3px">Add Point</a>
+        </div>
+
+        <a href="#popupDialog" id="popupDialogButton" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b" style="display: none;">Point Information</a>
+        <div data-role="popup" id="popupDialog" data-overlay-theme="b" data-dismissible="false" style="width: 80%">
+        </div>
+
+    </div>
+
+
+
+
+    <div data-role="page" data-theme="a" id="divHelp" class="hidden">
+        <div data-role="header" data-position="inline" id="div23">
+            <h1>Scout Master
+                <a data-role="button" data-inline="true" data-icon="arrow-l" class="formbtnCancel ui-btn-left">Back</a>
+            </h1>
+        </div>
+
+        <div data-role="content" data-theme="a" id="Iframe1" name="olmap" src="map.html" style="border: 0px solid red; width: 100%">
+            Scout Master Documentation<br /><br />
+            Under Construction
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <h6>Copyright 2017</h6>
+        </div>
+
+
+    </div>
+
+
+    <div data-role="page" data-theme="a" id="divMessages" class="hidden">
+        <div data-role="header" data-position="inline" id="div24">
+            <h1>Scout Master
+                <a data-role="button" data-inline="true" data-icon="arrow-l" class="formbtnCancel ui-btn-left">Back</a>
+            </h1>
+            <a href="#divMessages" id="msgPageButton" style="display: none; visibility: hidden"></a>
+        </div>
+
+        <div data-role="content" data-theme="a" id="Div25" name="olmap" src="map.html" style="border: 0px solid red; width: 100%">
+            <br />
+            <br />
+            <div id="divMsgBody">
+                hello
+            </div>
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <h6>Copyright 2017</h6>
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <div data-role="page" data-theme="a" id="divCapture">
+        <div data-role="header" data-position="inline" id="div3">
+            <h1>Capture Point
+                <a data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left">Cancel</a>
+                <a data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right">Save</a>
+            </h1>
+        </div>
+        <div role="main" class="ui-content">
+            <a id="showMapButton" href="#MainView" data-transition="slideDown" class="hidden" style="display: none; visibility: hidden">Go Main Page</a>
+
+            <div id="btnDelCapDiv">
+                <a id="btnDelCap" data-role="button" data-icon="delete" class="">Delete Capture</a>
+            </div>
+
+            <label for="giskey">GIS Key:</label>
+            <input type="text" readonly="readonly" id="giskey" />
+
+
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 49%">
+                        <input type="checkbox" name="check-choice" id="selVacant" />
+                        <label for="selVacant">Vacant</label>
+                    </td>
+                    <td style="width: 2%">&nbsp;</td>
+                    <td style="width: 49%" class="notVacant">
+                        <input type="checkbox" name="check-choice" id="selNotSurv" />
+                        <label for="selNotSurv">Not surveyable</label>
+                    </td>
+                </tr>
+
+                <tbody class="notVacant">
+                    <tr>
+                        <td style="width: 49%">
+                            <input type="checkbox" name="check-choice" id="selNonErfB" />
+                            <label for="selNonErfB">Non erf bound</label>
+                        </td>
+                        <td style="width: 2%">&nbsp;</td>
+                        <td style="width: 49%">
+                            <input type="checkbox" name="check-choice" id="selPubProp" />
+                            <label for="selPubProp">Public property</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="width: 49%">
+                            <input type="checkbox" name="check-choice" id="selInfoAct" />
+                            <label for="selInfoAct">Informal activity</label>
+                        </td>
+                        <td style="width: 2%">&nbsp;</td>
+                        <td style="width: 49%">
+                            <input type="checkbox" name="check-choice" id="selNotOcc" />
+                            <label for="selNotOcc">Not occupied/dormant</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 49%">
+                            <input type="checkbox" name="check-choice" id="selIllBuild" />
+                            <label for="selIllBuild">Illegal building</label>
+                        </td>
+                        <td style="width: 2%">&nbsp;</td>
+                        <td style="width: 49%">
+                            <input type="checkbox" name="check-choice" id="selNatFeat" />
+                            <label for="selNatFeat">Natural features</label>
+                        </td>
+                    </tr>
+
+                    <tbody id="tbNatFeature">
+
+                        <tr>
+                            <td style="width: 49%">
+                                <input type="checkbox" name="check-choice" id="selWaterBody" />
+                                <label for="selWaterBody">Waterbody</label>
+                            </td>
+                            <td style="width: 2%">&nbsp;</td>
+                            <td style="width: 49%">
+                                <input type="checkbox" name="check-choice" id="selRidge" />
+                                <label for="selRidge">Ridge</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 49%">
+                                <input type="checkbox" name="check-choice" id="selMountain" />
+                                <label for="selMountain">Mountain</label>
+                            </td>
+                            <td style="width: 2%">&nbsp;</td>
+                            <td style="width: 49%">
+                                <input type="checkbox" name="check-choice" id="selOpenSpace" />
+                                <label for="selOpenSpace">Open space</label>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </tbody>
+            </table>
+            <!-- add photo -->
+            
+            <div id="photoContainer" style="background-color: #333333; height: 125px; display: none">
+                <div id="fileUploadList" style="background-color: #333333; height: 115px; overflow-x: hidden; overflow-y: scroll; border: 1px solid black; background-color: white; padding: 4px" class="hidden">
+                </div>
+                <div id="fileImageList" style="background-color: #333333; height: 115px; overflow-x: hidden; overflow-y: scroll; border: 0px solid black; padding: 4px; text-align: center">
+                </div>
+            </div>
+
+            <div class="img-wrap">
+                <span id="photoDelButton" class="close ui-icon-delete ui-btn-icon-right"></span>
+                <img id="myImage" style="width: 100%" />
+            </div>
+
+
+
+            <div class="notVacant notSurveyable">
+
+                <div id="devdiv">
+                    <!--
+                    <div style="display: none">
+                        <input type="checkbox" name="check-choice" id="selEnc" />
+                        <label for="selEnc">Encrouchments</label>
+                    </div>
+
+                    <input type="checkbox" name="check-choice" id="selInf" />
+                    <label for="selInf">Informal structures</label>
+                    -->
+
+
+                    <label for="stbuildings">Number of Buildings:</label>
+                    <select id="stbuildings">
+                        <option selected="selected" value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+
+                    <!----------- BUILDING 1 ------------->
+                    <div id="b1_main">
+                        <hr />
+                        <strong>Building 1</strong>
+                        <hr />
+                        <label for="b1_stcount">Number of storeys:</label>
+                        <select id="b1_stcount" class="cbStoreyCount">
+                            <option selected="selected" value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+
+
+                        <label for="b1_s1c1">Main class:</label>
+                        <select id="b1_s1c1" class="selc1"></select>
+
+                        <label for="b1_s1c2">Primary class:</label>
+                        <select id="b1_s1c2" class="selc2"></select>
+
+                        <label for="b1_s1c3">Secondary class:</label>
+                        <select id="b1_s1c3" class="selc3"></select>
+
+                        <label for="b1_s1c4">Tertiary class:</label>
+                        <select id="b1_s1c4" class="selc4"></select>
+
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b1_st2">
+                            <div data-role="collapsible" id="b1_set1" data-collapsed="false">
+                                <h3>Storey 2</h3>
+                                <p>
+                                    <label for="b1_s2c1">Main class:</label>
+                                    <select id="b1_s2c1" class="selc1"></select>
+
+                                    <label for="b1_s2c2">Primary class:</label>
+                                    <select id="b1_s2c2" class="selc2"></select>
+
+                                    <label for="b1_s2c3">Secondary class:</label>
+                                    <select id="b1_s2c3" class="selc3"></select>
+
+                                    <label for="b1_s2c4">Tertiary class:</label>
+                                    <select id="b1_s2c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b1_st3">
+                            <div data-role="collapsible" id="Div2" data-collapsed="false">
+                                <h3>Storey 3</h3>
+                                <p>
+                                    <label for="b1_s3c3">Main class:</label>
+                                    <select id="b1_s3c1" class="selc1"></select>
+
+                                    <label for="b1_s3c3">Primary class:</label>
+                                    <select id="b1_s3c2" class="selc2"></select>
+
+                                    <label for="b1_s3c3">Secondary class:</label>
+                                    <select id="b1_s3c3" class="selc3"></select>
+
+                                    <label for="b1_s3c4">Tertiary class:</label>
+                                    <select id="b1_s3c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b1_st4">
+                            <div data-role="collapsible" id="Div4" data-collapsed="false">
+                                <h3>Storey 4</h3>
+                                <p>
+                                    <label for="b1_s4c3">Main class:</label>
+                                    <select id="b1_s4c1" class="selc1"></select>
+
+                                    <label for="b1_s4c3">Primary class:</label>
+                                    <select id="b1_s4c2" class="selc2"></select>
+
+                                    <label for="b1_s4c3">Secondary class:</label>
+                                    <select id="b1_s4c3" class="selc3"></select>
+
+                                    <label for="b1_s4c4">Tertiary class:</label>
+                                    <select id="b1_s4c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b1_st5">
+                            <div data-role="collapsible" id="Div6" data-collapsed="false">
+                                <h3>Storey 5</h3>
+                                <p>
+                                    <label for="b1_s5c1">Main class:</label>
+                                    <select id="b1_s5c1" class="selc1"></select>
+
+                                    <label for="b1_s5c2">Primary class:</label>
+                                    <select id="b1_s5c2" class="selc2"></select>
+
+                                    <label for="b1_s5c3">Secondary class:</label>
+                                    <select id="b1_s5c3" class="selc3"></select>
+
+                                    <label for="b1_s5c4">Tertiary class:</label>
+                                    <select id="b1_s5c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b1_st6">
+                            <div data-role="collapsible" id="Div8" data-collapsed="false">
+                                <h3>Storey 6</h3>
+                                <p>
+                                    <label for="b1_s6c1">Main class:</label>
+                                    <select id="b1_s6c1" class="selc1"></select>
+
+                                    <label for="b1_s6c2">Primary class:</label>
+                                    <select id="b1_s6c2" class="selc2"></select>
+
+                                    <label for="b1_s6c3">Secondary class:</label>
+                                    <select id="b1_s6c3" class="selc3"></select>
+
+                                    <label for="b1_s6c4">Tertiary class:</label>
+                                    <select id="b1_s6c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!----------- BUILDING 2 ------------->
+                    <div id="b2_main">
+                        <hr />
+                        <strong>Building 2</strong>
+                        <hr />
+                        <label for="b2_stcount">Number of storeys:</label>
+                        <select id="b2_stcount" class="cbStoreyCount">
+                            <option selected="selected" value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+
+
+                        <label for="b2_s1c1">Main class:</label>
+                        <select id="b2_s1c1" class="selc1"></select>
+
+                        <label for="b2_s1c2">Primary class:</label>
+                        <select id="b2_s1c2" class="selc2"></select>
+
+                        <label for="b2_s1c3">Secondary class:</label>
+                        <select id="b2_s1c3" class="selc3"></select>
+
+                        <label for="b2_s1c4">Tertiary class:</label>
+                        <select id="b2_s1c4" class="selc4"></select>
+
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b2_st2">
+                            <div data-role="collapsible" id="b2_set1" data-collapsed="false">
+                                <h3>Storey 2</h3>
+                                <p>
+                                    <label for="b2_s2c1">Main class:</label>
+                                    <select id="b2_s2c1" class="selc1"></select>
+
+                                    <label for="b2_s2c2">Primary class:</label>
+                                    <select id="b2_s2c2" class="selc2"></select>
+
+                                    <label for="b2_s2c3">Secondary class:</label>
+                                    <select id="b2_s2c3" class="selc3"></select>
+
+                                    <label for="b2_s2c4">Tertiary class:</label>
+                                    <select id="b2_s2c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b2_st3">
+                            <div data-role="collapsible" id="Div1" data-collapsed="false">
+                                <h3>Storey 3</h3>
+                                <p>
+                                    <label for="b2_s3c3">Main class:</label>
+                                    <select id="b2_s3c1" class="selc1"></select>
+
+                                    <label for="b2_s3c3">Primary class:</label>
+                                    <select id="b2_s3c2" class="selc2"></select>
+
+                                    <label for="b2_s3c3">Secondary class:</label>
+                                    <select id="b2_s3c3" class="selc3"></select>
+
+                                    <label for="b2_s3c4">Tertiary class:</label>
+                                    <select id="b2_s3c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b2_st4">
+                            <div data-role="collapsible" id="Div5" data-collapsed="false">
+                                <h3>Storey 4</h3>
+                                <p>
+                                    <label for="b2_s4c3">Main class:</label>
+                                    <select id="b2_s4c1" class="selc1"></select>
+
+                                    <label for="b2_s4c3">Primary class:</label>
+                                    <select id="b2_s4c2" class="selc2"></select>
+
+                                    <label for="b2_s4c3">Secondary class:</label>
+                                    <select id="b2_s4c3" class="selc3"></select>
+
+                                    <label for="b2_s4c4">Tertiary class:</label>
+                                    <select id="b2_s4c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b2_st5">
+                            <div data-role="collapsible" id="Div7" data-collapsed="false">
+                                <h3>Storey 5</h3>
+                                <p>
+                                    <label for="b2_s5c1">Main class:</label>
+                                    <select id="b2_s5c1" class="selc1"></select>
+
+                                    <label for="b2_s5c2">Primary class:</label>
+                                    <select id="b2_s5c2" class="selc2"></select>
+
+                                    <label for="b2_s5c3">Secondary class:</label>
+                                    <select id="b2_s5c3" class="selc3"></select>
+
+                                    <label for="b2_s5c4">Tertiary class:</label>
+                                    <select id="b2_s5c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b2_st6">
+                            <div data-role="collapsible" id="Div9" data-collapsed="false">
+                                <h3>Storey 6</h3>
+                                <p>
+                                    <label for="b2_s6c1">Main class:</label>
+                                    <select id="b2_s6c1" class="selc1"></select>
+
+                                    <label for="b2_s6c2">Primary class:</label>
+                                    <select id="b2_s6c2" class="selc2"></select>
+
+                                    <label for="b2_s63">Secondary class:</label>
+                                    <select id="b2_s63" class="selc3"></select>
+
+                                    <label for="b2_s6c4">Tertiary class:</label>
+                                    <select id="b2_s6c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!----------- BUILDING 3 ------------->
+                    <div id="b3_main">
+                        <hr />
+                        <strong>Building 3</strong>
+                        <hr />
+                        <label for="b3_stcount">Number of storeys:</label>
+                        <select id="b3_stcount" class="cbStoreyCount">
+                            <option selected="selected" value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+
+
+                        <label for="b3_s1c1">Main class:</label>
+                        <select id="b3_s1c1" class="selc1"></select>
+
+                        <label for="b3_s1c2">Primary class:</label>
+                        <select id="b3_s1c2" class="selc2"></select>
+
+                        <label for="b3_s1c3">Secondary class:</label>
+                        <select id="b3_s1c3" class="selc3"></select>
+
+                        <label for="b3_s1c4">Tertiary class:</label>
+                        <select id="b3_s1c4" class="selc4"></select>
+
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b3_st2">
+                            <div data-role="collapsible" id="b3_set1" data-collapsed="false">
+                                <h3>Storey 2</h3>
+                                <p>
+                                    <label for="b3_s2c1">Main class:</label>
+                                    <select id="b3_s2c1" class="selc1"></select>
+
+                                    <label for="b3_s2c2">Primary class:</label>
+                                    <select id="b3_s2c2" class="selc2"></select>
+
+                                    <label for="b3_s2c3">Secondary class:</label>
+                                    <select id="b3_s2c3" class="selc3"></select>
+
+                                    <label for="b3_s2c4">Tertiary class:</label>
+                                    <select id="b3_s2c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b3_st3">
+                            <div data-role="collapsible" id="Div10" data-collapsed="false">
+                                <h3>Storey 3</h3>
+                                <p>
+                                    <label for="b3_s3c3">Main class:</label>
+                                    <select id="b3_s3c1" class="selc1"></select>
+
+                                    <label for="b3_s3c3">Primary class:</label>
+                                    <select id="b3_s3c2" class="selc2"></select>
+
+                                    <label for="b3_s3c3">Secondary class:</label>
+                                    <select id="b3_s3c3" class="selc3"></select>
+
+                                    <label for="b3_s3c4">Tertiary class:</label>
+                                    <select id="b3_s3c4" class="selc4"></select>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b3_st4">
+                            <div data-role="collapsible" id="Div11" data-collapsed="false">
+                                <h3>Storey 4</h3>
+                                <p>
+                                    <label for="b3_s4c3">Main class:</label>
+                                    <select id="b3_s4c1" class="selc1"></select>
+
+                                    <label for="b3_s4c3">Primary class:</label>
+                                    <select id="b3_s4c2" class="selc2"></select>
+
+                                    <label for="b3_s4c3">Secondary class:</label>
+                                    <select id="b3_s4c3" class="selc3"></select>
+
+                                    <label for="b3_s4c4">Tertiary class:</label>
+                                    <select id="b3_s4c4" class="selc4"></select>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b3_st5">
+                            <div data-role="collapsible" id="Div12" data-collapsed="false">
+                                <h3>Storey 5</h3>
+                                <p>
+                                    <label for="b3_s5c1">Main class:</label>
+                                    <select id="b3_s5c1" class="selc1"></select>
+
+                                    <label for="b3_s5c2">Primary class:</label>
+                                    <select id="b3_s5c2" class="selc2"></select>
+
+                                    <label for="b3_s5c3">Secondary class:</label>
+                                    <select id="b3_s5c3" class="selc3"></select>
+
+                                    <label for="b3_s6c4">Tertiary class:</label>
+                                    <select id="b3_s6c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b3_st6">
+                            <div data-role="collapsible" id="Div13" data-collapsed="false">
+                                <h3>Storey 6</h3>
+                                <p>
+                                    <label for="b3_s6c1">Main class:</label>
+                                    <select id="b3_s6c1" class="selc1"></select>
+
+                                    <label for="b3_s6c2">Primary class:</label>
+                                    <select id="b3_s6c2" class="selc2"></select>
+
+                                    <label for="b3_s63">Secondary class:</label>
+                                    <select id="b3_s63" class="selc3"></select>
+
+                                    <label for="b3_s6c4">Tertiary class:</label>
+                                    <select id="Select1" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!----------- BUILDING 4 ------------->
+                    <div id="b4_main">
+                        <hr />
+                        <strong>Building 4</strong>
+                        <hr />
+                        <label for="b4_stcount">Number of storeys:</label>
+                        <select id="b4_stcount" class="cbStoreyCount">
+                            <option selected="selected" value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+
+
+                        <label for="b4_s1c1">Main class:</label>
+                        <select id="b4_s1c1" class="selc1"></select>
+
+                        <label for="b4_s1c2">Primary class:</label>
+                        <select id="b4_s1c2" class="selc2"></select>
+
+                        <label for="b4_s1c3">Secondary class:</label>
+                        <select id="b4_s1c3" class="selc3"></select>
+
+                        <label for="b4_s1c4">Tertiary class:</label>
+                        <select id="b4_s1c4" class="selc4"></select>
+
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b4_st2">
+                            <div data-role="collapsible" id="b4_set1" data-collapsed="false">
+                                <h3>Storey 2</h3>
+                                <p>
+                                    <label for="b4_s2c1">Main class:</label>
+                                    <select id="b4_s2c1" class="selc1"></select>
+
+                                    <label for="b4_s2c2">Primary class:</label>
+                                    <select id="b4_s2c2" class="selc2"></select>
+
+                                    <label for="b4_s2c3">Secondary class:</label>
+                                    <select id="b4_s2c3" class="selc3"></select>
+
+                                    <label for="b4_s2c4">Tertiary class:</label>
+                                    <select id="b4_s2c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b4_st3">
+                            <div data-role="collapsible" id="Div14" data-collapsed="false">
+                                <h3>Storey 3</h3>
+                                <p>
+                                    <label for="b4_s3c3">Main class:</label>
+                                    <select id="b4_s3c1" class="selc1"></select>
+
+                                    <label for="b4_s3c3">Primary class:</label>
+                                    <select id="b4_s3c2" class="selc2"></select>
+
+                                    <label for="b4_s3c3">Secondary class:</label>
+                                    <select id="b4_s3c3" class="selc3"></select>
+
+                                    <label for="b4_s3c4">Tertiary class:</label>
+                                    <select id="b4_s3c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b4_st4">
+                            <div data-role="collapsible" id="Div15" data-collapsed="false">
+                                <h3>Storey 4</h3>
+                                <p>
+                                    <label for="b4_s4c3">Main class:</label>
+                                    <select id="b4_s4c1" class="selc1"></select>
+
+                                    <label for="b4_s4c3">Primary class:</label>
+                                    <select id="b4_s4c2" class="selc2"></select>
+
+                                    <label for="b4_s4c3">Secondary class:</label>
+                                    <select id="b4_s4c3" class="selc3"></select>
+
+                                    <label for="b4_s4c4">Tertiary class:</label>
+                                    <select id="b4_s4c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b4_st5">
+                            <div data-role="collapsible" id="Div16" data-collapsed="false">
+                                <h3>Storey 5</h3>
+                                <p>
+                                    <label for="b4_s5c1">Main class:</label>
+                                    <select id="b4_s5c1" class="selc1"></select>
+
+                                    <label for="b4_s5c2">Primary class:</label>
+                                    <select id="b4_s5c2" class="selc2"></select>
+
+                                    <label for="b4_s5c3">Secondary class:</label>
+                                    <select id="b4_s5c3" class="selc3"></select>
+
+                                    <label for="b4_s5c4">Tertiary class:</label>
+                                    <select id="b4_s5c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b4_st6">
+                            <div data-role="collapsible" id="Div17" data-collapsed="false">
+                                <h3>Storey 6</h3>
+                                <p>
+                                    <label for="b4_s6c1">Main class:</label>
+                                    <select id="b4_s6c1" class="selc1"></select>
+
+                                    <label for="b4_s6c2">Primary class:</label>
+                                    <select id="b4_s6c2" class="selc2"></select>
+
+                                    <label for="b4_s63">Secondary class:</label>
+                                    <select id="b4_s63" class="selc3"></select>
+
+                                    <label for="b4_s6c4">Tertiary class:</label>
+                                    <select id="b4_s6c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!----------- BUILDING 5 ------------->
+                    <div id="b5_main">
+                        <hr />
+                        <strong>Building 5</strong>
+                        <hr />
+                        <label for="b5_stcount">Number of storeys:</label>
+                        <select id="b5_stcount" class="cbStoreyCount">
+                            <option selected="selected" value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+
+
+                        <label for="b5_s1c1">Main class:</label>
+                        <select id="b5_s1c1" class="selc1"></select>
+
+                        <label for="b5_s1c2">Primary class:</label>
+                        <select id="b5_s1c2" class="selc2"></select>
+
+                        <label for="b5_s1c3">Secondary class:</label>
+                        <select id="b5_s1c3" class="selc3"></select>
+
+                        <label for="b5_s1c4">Tertiary class:</label>
+                        <select id="b5_s1c4" class="selc4"></select>
+
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b5_st2">
+                            <div data-role="collapsible" id="b5_set1" data-collapsed="false">
+                                <h3>Storey 2</h3>
+                                <p>
+                                    <label for="b5_s2c1">Main class:</label>
+                                    <select id="b5_s2c1" class="selc1"></select>
+
+                                    <label for="b5_s2c2">Primary class:</label>
+                                    <select id="b5_s2c2" class="selc2"></select>
+
+                                    <label for="b5_s2c3">Secondary class:</label>
+                                    <select id="b5_s2c3" class="selc3"></select>
+
+                                    <label for="b5_s2c4">Tertiary class:</label>
+                                    <select id="b5_s2c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b5_st3">
+                            <div data-role="collapsible" id="Div18" data-collapsed="false">
+                                <h3>Storey 3</h3>
+                                <p>
+                                    <label for="b5_s3c3">Main class:</label>
+                                    <select id="b5_s3c1" class="selc1"></select>
+
+                                    <label for="b5_s3c3">Primary class:</label>
+                                    <select id="b5_s3c2" class="selc2"></select>
+
+                                    <label for="b5_s3c3">Secondary class:</label>
+                                    <select id="b5_s3c3" class="selc3"></select>
+
+                                    <label for="b5_s3c4">Tertiary class:</label>
+                                    <select id="b5_s3c4" class="selc4"></select>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b5_st4">
+                            <div data-role="collapsible" id="Div19" data-collapsed="false">
+                                <h3>Storey 4</h3>
+                                <p>
+                                    <label for="b5_s4c3">Main class:</label>
+                                    <select id="b5_s4c1" class="selc1"></select>
+
+                                    <label for="b5_s4c3">Primary class:</label>
+                                    <select id="b5_s4c2" class="selc2"></select>
+
+                                    <label for="b5_s4c3">Secondary class:</label>
+                                    <select id="b5_s4c3" class="selc3"></select>
+
+                                    <label for="b5_s4c4">Tertiary class:</label>
+                                    <select id="b5_s4c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b5_st5">
+                            <div data-role="collapsible" id="Div20" data-collapsed="false">
+                                <h3>Storey 5</h3>
+                                <p>
+                                    <label for="b5_s5c1">Main class:</label>
+                                    <select id="b5_s5c1" class="selc1"></select>
+
+                                    <label for="b5_s5c2">Primary class:</label>
+                                    <select id="b5_s5c2" class="selc2"></select>
+
+                                    <label for="b5_s5c3">Secondary class:</label>
+                                    <select id="b5_s5c3" class="selc3"></select>
+
+                                    <label for="b5_s5c4">Tertiary class:</label>
+                                    <select id="b5_s5c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <div data-role="collapsible-set" data-content-theme="d" id="b5_st6">
+                            <div data-role="collapsible" id="Div21" data-collapsed="false">
+                                <h3>Storey 6</h3>
+                                <p>
+                                    <label for="b5_s6c1">Main class:</label>
+                                    <select id="b5_s6c1" class="selc1"></select>
+
+                                    <label for="b5_s6c2">Primary class:</label>
+                                    <select id="b5_s6c2" class="selc2"></select>
+
+                                    <label for="b5_s63">Secondary class:</label>
+                                    <select id="b5_s63" class="selc3"></select>
+
+                                    <label for="b5_s6c4">Tertiary class:</label>
+                                    <select id="b5_s6c4" class="selc4"></select>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <hr />
+
+
+                </div>
+
+
+            </div>
+            <label for="commentBox">Comments:</label>
+            <textarea id="commentBox"></textarea>
+
+
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <h5>Copyright 2017
+                <a href="#layerBox" data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left" style="top: -3px">Cancel</a>
+                <a href="#layerBox" data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right" style="top: -3px">Save</a>
+            </h5>
+        </div>
+
+
+    </div>
+
+
+
 </body>
 
 </html>
