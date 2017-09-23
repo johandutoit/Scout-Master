@@ -401,6 +401,9 @@ under the License.
 
             startLoadingBox("start");
 
+            var user = localStorage.getItem('scout');
+            $('#inputEmail').val(user);
+
             initEditPage();
 
             var d = new Date();
@@ -672,12 +675,19 @@ under the License.
             $.mobile.loading('hide');
         }
 
+        function doSubmit() {
+            localStorage.setItem('scout', $('#inputEmail').val());
+            $('#mainViewButton').trigger('click');
+            return false;
+        }
+
+
     </script>
 
 
 </head>
 
-<body>
+<body onload="resizemapdiv();" onresize="resizemapdiv();">
 
     <div data-role="page" data-theme="a" id="SignInView" class="hidden">
         <div data-role="header" data-position="inline" id="div22">
@@ -715,6 +725,7 @@ under the License.
 
 
     <div data-role="page" data-theme="a" id="MainView" class="hidden">
+        <a href="#MainView" style="display: none" id="mainViewButton"></a>
         <div data-role="header" data-position="inline" id="divHeader">
             <h1>Scout Master
                 <a id="showCapButton" href="#divCapture" data-transition="slideUp" class="hidden" style="display: none; visibility: hidden">Go To Page 2</a>
