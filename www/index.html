@@ -536,9 +536,7 @@ under the License.
                 var scout = localStorage.getItem('scout').toUpperCase();
                 var json = localStorage.getItem('parcels');
                 global.syncData = JSON.parse(json);
-                var features = global.syncData.features;
-                global.synFeatures = data.features;
-
+                global.synFeatures = global.syncData.features;
                 doSyncPhotos();
 
 
