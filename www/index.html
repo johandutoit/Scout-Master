@@ -448,9 +448,7 @@ under the License.
             function succesFileTransfer(a, b, c, d) {
                 alert('sft');
                 alert(a);
-                alert(b);
-                alert(c);
-                alert(d);
+                alert(a.responseText);
             }
 
             function errorFileTransfer() {
@@ -465,33 +463,27 @@ under the License.
                 var username = 'your_user';
                 var password = 'your_pwd';
 
-                alert('s2');
 
                 var params = new Object();
                 params.your_param_name = "something";  //you can send additional info with the file
 
-                alert('s3');
 
                 var options = new FileUploadOptions();
 
-                alert('s4');
                 options.fileKey = "the_name_of_the_image_field"; //depends on the api
                 options.fileName = imageUriToUpload.substr(imageUriToUpload.lastIndexOf('/') + 1);
                 options.mimeType = "image/jpeg";
                 options.params = params;
                 options.chunkedMode = true; //this is important to send both data and files
 
-                alert('s5');
 
              //   var headers = { 'Authorization': "Basic " + Base64.encode(username + ":" + password) };
              //   options.headers = headers;
 
-                alert('s6');
 
                 var ft = new FileTransfer();
                 ft.upload(imageUriToUpload, url, succesFileTransfer, errorFileTransfer, options);
 
-                alert('s7');
 
             }
 
