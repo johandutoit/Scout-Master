@@ -721,6 +721,8 @@
         function LoadParcelJSON(data) {
             global.parcels = data;
             var features = data.features;
+            if (features.length == 0)
+                return;
 
             var minX = 1e100;
             var minY = 1e100;
