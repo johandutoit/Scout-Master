@@ -757,7 +757,8 @@
 
         function zoomToParcels() {
             view.fit(global.zoomExtent);
-            view.setZoom(18);
+            if (view.getZoom() > 18)
+                view.setZoom(18);
 
         }
 
