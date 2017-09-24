@@ -254,7 +254,7 @@
 
             var style = new ol.style.Style({
                 fill: new ol.style.Fill({
-                    color: '#ffff00',
+                    color: '#0000ff',
                 }),
                 stroke: new ol.style.Stroke({
                     color: '#ff0000',
@@ -360,7 +360,7 @@
 
             var style = new ol.style.Style({
                 fill: new ol.style.Fill({
-                    color: '#ffff00'
+                    color: 'rgba(255, 255, 0, 0.6)'
                 }),
                 stroke: new ol.style.Stroke({
                     color: '#ff0000',
@@ -682,7 +682,13 @@
 
             var color = 'rgba(255, 255, 0, 0.1)';
             if (atts['status'] == 'captured')
-                color = '#ffff00';
+                color = 'rgba(255, 255, 0, 0.6)';
+
+            if (atts['status'] == 'approved')
+                color = 'rgba(0, 255, 0, 0.6)';
+
+            if (atts['status'] == 'redo')
+                color = 'rgba(255, 0, 0, 0.6)';
 
             var style = new ol.style.Style({
                 fill: new ol.style.Fill({
