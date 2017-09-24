@@ -472,13 +472,23 @@ under the License.
         }
 
         function doMainSync() {
+            debugger;
             var scout = localStorage.getItem('scout').toUpperCase();
+            var flist = [];
+            var features = global.syncData.features;
+            for (var f in features) {
+                var feature = features[f];
+                if (feature.atts['mod'] == true)
+                    flist.push(feature);
+            }
+            global.syncData.features = flist;
+
             var json = JSON.stringify(global.syncData);
 
             startLoadingBox("Syncing...");
 
             // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
-            var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
+             var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
 
 
             var dellist = getDelList();
@@ -589,6 +599,7 @@ under the License.
                     global.atts['capdate'] = new Date();
                 }
 
+                global.atts['mod'] = true;
                 global.atts['status'] = 'captured';
 
                 global.atts['selVacant'] = getCheckBox('selVacant');
