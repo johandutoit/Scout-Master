@@ -445,12 +445,73 @@ under the License.
 
             var d = new Date();
 
+            function succesFileTransfer() {
+                alert('sft');
+            }
+
+            function errorFileTransfer() {
+                alert('eft');
+            }
+
+            function doUploadPhoto(imageUriToUpload) {
+                var url = encodeURI("http://your_url_for_the_post/");
+
+                alert('s1');
+
+                var username = 'your_user';
+                var password = 'your_pwd';
+
+                alert('s2');
+
+                var params = new Object();
+                params.your_param_name = "something";  //you can send additional info with the file
+
+                alert('s3');
+
+                var options = new FileUploadOptions();
+
+                alert('s4');
+                options.fileKey = "the_name_of_the_image_field"; //depends on the api
+                options.fileName = imageUriToUpload.substr(imageUriToUpload.lastIndexOf('/') + 1);
+                options.mimeType = "image/jpeg";
+                options.params = params;
+                options.chunkedMode = true; //this is important to send both data and files
+
+                alert('s5');
+
+                var headers = { 'Authorization': "Basic " + Base64.encode(username + ":" + password) };
+                options.headers = headers;
+
+                alert('s6');
+
+                var ft = new FileTransfer();
+                ft.upload(imageUriToUpload, url, succesFileTransfer, errorFileTransfer, options);
+
+                alert('s7');
+
+            }
+
             $('#syncButton').click(function () {
 
-                startLoadingBox("Syncing...");
+                
 
                 var scout = localStorage.getItem('scout').toUpperCase();
                 var json = localStorage.getItem('parcels');
+                var data = JSON.parse(json);
+                var features = data.features;
+                for (var f in features) {
+                    var feature = features[f];
+                    var photo = feature.atts['photo'];
+                    if (photo != null && photo != '' && photo.indexOf('mapdn') == -1) {
+                        doUploadPhoto(photo);
+
+                    }
+                }
+
+
+                startLoadingBox("Syncing...");
+
+                
                 // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
                 var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
 
@@ -458,7 +519,7 @@ under the License.
                  var dellist = getDelList();
                 
                 //
-                // $.ajax(url + '?mode=sync&scout=' + scout + '&json=' + json + '&version=1' )
+                //  $.ajax(url + '?mode=sync&scout=' + scout + '&json=' + json + '&version=1&dellist=' + escape(dellist))
                 $.post(url, { mode: 'sync', scout: scout, json: json, version: 1, dellist: dellist })
                 .done(function (data) {
                     var json = JSON.parse(data);
@@ -579,9 +640,12 @@ under the License.
                 */
             });
 
-
             $('.formbtnCancel').click(function () {
-                debugger;
+                history.back(1);
+            });
+
+
+            $('.formbtnCancelCapture').click(function () {
                 var mapframe = window.frames['olmap'];
                 mapframe.cancelNewFeature();
                 history.back(1);
@@ -884,7 +948,7 @@ under the License.
     <div data-role="page" data-theme="a" id="divCapture">
         <div data-role="header" data-position="inline" id="div3">
             <h1>Capture Point
-                <a data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left">Cancel</a>
+                <a data-role="button" data-inline="true" data-icon="delete" class="formbtnCancelCapture ui-btn-left">Cancel</a>
                 <a data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right">Save</a>
             </h1>
         </div>
@@ -1681,7 +1745,7 @@ under the License.
 
         <div data-role="footer" data-position="fixed">
             <h5>Copyright 2017
-                <a href="#layerBox" data-role="button" data-inline="true" data-icon="delete" class="formbtnCancel ui-btn-left" style="top: -3px">Cancel</a>
+                <a href="#layerBox" data-role="button" data-inline="true" data-icon="delete" class="formbtnCancelCapture ui-btn-left" style="top: -3px">Cancel</a>
                 <a href="#layerBox" data-role="button" data-inline="true" data-icon="check" class="formbtnSave ui-btn-right" style="top: -3px">Save</a>
             </h5>
         </div>
