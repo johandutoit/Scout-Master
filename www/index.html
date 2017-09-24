@@ -445,8 +445,12 @@ under the License.
 
             var d = new Date();
 
-            function succesFileTransfer() {
+            function succesFileTransfer(a, b, c, d) {
                 alert('sft');
+                alert(a);
+                alert(b);
+                alert(c);
+                alert(d);
             }
 
             function errorFileTransfer() {
@@ -454,7 +458,7 @@ under the License.
             }
 
             function doUploadPhoto(imageUriToUpload) {
-                var url = encodeURI("http://your_url_for_the_post/");
+                var url = encodeURI("http://maps.mapable.co.za/mapdn/surveyphoto.ashx");
 
                 alert('s1');
 
