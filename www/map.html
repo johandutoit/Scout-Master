@@ -294,7 +294,9 @@
 
         function delActiveFeature() {
 
-            if (global.editFeature.atts['GIS_KEY'] == null || global.editFeature.atts['GIS_KEY']) {
+            
+
+            if (global.editFeature.atts['GIS_KEY'] == null || global.editFeature.atts['GIS_KEY'] == "") {
                 var features = global.parcels.features;
                 for (var i = 0; i < features.length; i++) {
                     var feature = features[i];
@@ -615,6 +617,7 @@
         });
 
         function cancelNewFeature() {
+            debugger;
             if (global.newFeature != null)
                 delActiveFeature();
         }
