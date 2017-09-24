@@ -469,7 +469,7 @@ under the License.
 
         function doMainSync() {
             var scout = localStorage.getItem('scout').toUpperCase();
-            var json = localStorage.getItem('parcels');
+            var json = JSON.stringify(global.syncData);
 
             startLoadingBox("Syncing...");
 
@@ -511,7 +511,7 @@ under the License.
                     alert(photo.indexOf('mapdn'));
                     
                     global.synFeature = feature;
-                    //doUploadPhoto(photo);
+                    doUploadPhoto(photo);
                     return;
                 }
             }
@@ -535,8 +535,8 @@ under the License.
 
                 var scout = localStorage.getItem('scout').toUpperCase();
                 var json = localStorage.getItem('parcels');
-                var data = JSON.parse(json);
-                var features = data.features;
+                global.syncData = JSON.parse(json);
+                var features = global.syncData.features;
                 global.synFeatures = data.features;
 
                 doSyncPhotos();
