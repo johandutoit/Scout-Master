@@ -434,6 +434,87 @@ under the License.
         }
 
 
+
+
+        function succesFileTransfer(a, b, c, d) {
+            alert('ok: ' + a.response);
+            global.synFeature.atts["photo"] = a.response;
+            endLoadingBox();
+            doSyncPhotos();
+        }
+
+        function errorFileTransfer() {
+            alert('Failed to upload photo');
+        }
+
+        function doUploadPhoto(imageUriToUpload) {
+            var url = encodeURI("http://maps.mapable.co.za/mapdn/surveyphoto.ashx");
+
+            startLoadingBox('Uploading: ' + imageUriToUpload);
+
+            var params = new Object();
+            params.your_param_name = "something";  //you can send additional info with the file
+
+            var options = new FileUploadOptions();
+
+            options.fileKey = "the_name_of_the_image_field"; //depends on the api
+            options.fileName = imageUriToUpload.substr(imageUriToUpload.lastIndexOf('/') + 1);
+            options.mimeType = "image/jpeg";
+            options.params = params;
+            options.chunkedMode = true; //this is important to send both data and files
+
+            var ft = new FileTransfer();
+            ft.upload(imageUriToUpload, url, succesFileTransfer, errorFileTransfer, options);
+        }
+
+        function doMainSync() {
+            var scout = localStorage.getItem('scout').toUpperCase();
+            var json = localStorage.getItem('parcels');
+
+            startLoadingBox("Syncing...");
+
+            // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
+            var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
+
+
+            var dellist = getDelList();
+
+            //
+            //  $.ajax(url + '?mode=sync&scout=' + scout + '&json=' + json + '&version=1&dellist=' + escape(dellist))
+            $.post(url, { mode: 'sync', scout: scout, json: json, version: 1, dellist: dellist })
+            .done(function (data) {
+                var json = JSON.parse(data);
+                if (json.success == true) {
+                    var mapframe = window.frames['olmap'];
+                    mapframe.LoadParcelJSON(json);
+                    localStorage.setItem('deleteList', '');
+                }
+                endLoadingBox();
+                $('#divMsgBody').html(json.message);
+                $('#msgPageButton').trigger('click');
+
+            })
+            .fail(function () {
+                endLoadingBox();
+                alert("Failed sync");
+                return;
+            })
+        }
+
+        function doSyncPhotos() {
+            var features = global.synFeatures;
+            for (var f in features) {
+                var feature = features[f];
+                var photo = feature.atts['photo'];
+                if (photo != null && photo != '' && photo.indexOf('mapdn') == -1) {
+                    global.synFeature = feature;
+                    doUploadPhoto(photo);
+                    return;
+                }
+            }
+            doMainSync();
+        }
+
         $(document).ready(function () {
 
             startLoadingBox("start");
@@ -445,49 +526,6 @@ under the License.
 
             var d = new Date();
 
-            function succesFileTransfer(a, b, c, d) {
-                alert('sft');
-                alert(a);
-                alert(a.response);
-                alert(a.bytesSent);
-            }
-
-            function errorFileTransfer() {
-                alert('eft');
-            }
-
-            function doUploadPhoto(imageUriToUpload) {
-                var url = encodeURI("http://maps.mapable.co.za/mapdn/surveyphoto.ashx");
-
-                alert('s1');
-
-                var username = 'your_user';
-                var password = 'your_pwd';
-
-
-                var params = new Object();
-                params.your_param_name = "something";  //you can send additional info with the file
-
-
-                var options = new FileUploadOptions();
-
-                options.fileKey = "the_name_of_the_image_field"; //depends on the api
-                options.fileName = imageUriToUpload.substr(imageUriToUpload.lastIndexOf('/') + 1);
-                options.mimeType = "image/jpeg";
-                options.params = params;
-                options.chunkedMode = true; //this is important to send both data and files
-
-
-             //   var headers = { 'Authorization': "Basic " + Base64.encode(username + ":" + password) };
-             //   options.headers = headers;
-
-
-                var ft = new FileTransfer();
-                ft.upload(imageUriToUpload, url, succesFileTransfer, errorFileTransfer, options);
-
-
-            }
-
             $('#syncButton').click(function () {
 
                 
@@ -496,45 +534,11 @@ under the License.
                 var json = localStorage.getItem('parcels');
                 var data = JSON.parse(json);
                 var features = data.features;
-                for (var f in features) {
-                    var feature = features[f];
-                    var photo = feature.atts['photo'];
-                    if (photo != null && photo != '' && photo.indexOf('mapdn') == -1) {
-                        doUploadPhoto(photo);
+                global.synFeatures = data.features;
 
-                    }
-                }
+                doSyncPhotos();
 
 
-                startLoadingBox("Syncing...");
-
-                
-                // var url = 'http://localhost/gsdf/mapdn/survey.aspx'
-                var url = 'http://maps.mapable.co.za/mapdn/survey.aspx'
-
-
-                 var dellist = getDelList();
-                
-                //
-                //  $.ajax(url + '?mode=sync&scout=' + scout + '&json=' + json + '&version=1&dellist=' + escape(dellist))
-                $.post(url, { mode: 'sync', scout: scout, json: json, version: 1, dellist: dellist })
-                .done(function (data) {
-                    var json = JSON.parse(data);
-                    if (json.success == true) {
-                        var mapframe = window.frames['olmap'];
-                        mapframe.LoadParcelJSON(json);
-                        localStorage.setItem('deleteList', '');
-                    }
-                    endLoadingBox();
-                    $('#divMsgBody').html(json.message);
-                    $('#msgPageButton').trigger('click');
-
-                })
-                .fail(function () {
-                    endLoadingBox();
-                    alert("Failed sync");
-                    return;
-                })
 
             });
 
