@@ -51,7 +51,8 @@
             gpscoords: null,
             initualZoom: false,
             skipClick: false,
-            layers: []
+            layers: [],
+            gpscoord: null
         };
 
         function genguid() {
@@ -133,39 +134,8 @@
         global.map = map;
 
 
-        var geolocation = new ol.Geolocation({
-            projection: view.getProjection()
-        });
-
-        function el(id) {
-            return document.getElementById(id);
-        }
-
-        el('track').addEventListener('change', function () {
-            geolocation.setTracking(this.checked);
-        });
-
-        // update the HTML page when the position changes.
-        geolocation.on('change', function () {
-            el('accuracy').innerText = geolocation.getAccuracy() + ' [m]';
-            el('altitude').innerText = geolocation.getAltitude() + ' [m]';
-            el('altitudeAccuracy').innerText = geolocation.getAltitudeAccuracy() + ' [m]';
-            el('heading').innerText = geolocation.getHeading() + ' [rad]';
-            el('speed').innerText = geolocation.getSpeed() + ' [m/s]';
-        });
-
-        // handle geolocation error.
-        geolocation.on('error', function (error) {
-            var info = document.getElementById('info');
-            info.innerHTML = error.message;
-            info.style.display = '';
-        });
 
         var accuracyFeature = new ol.Feature();
-        geolocation.on('change:accuracyGeometry', function () {
-            accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
-        });
-
         var positionFeature = new ol.Feature();
         positionFeature.setStyle(new ol.style.Style({
             image: new ol.style.Circle({
@@ -179,19 +149,6 @@
                 })
             })
         }));
-
-        geolocation.on('change:position', function () {
-            var coordinates = geolocation.getPosition();
-            positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
-            if (coordinates != null) {
-                global.gpscoords = coordinates;
-                if (global.initualZoom == false) {
-                    view.setCenter(global.gpscoords);
-                    view.setZoom(18);
-                    global.initualZoom = true;
-                }
-            }
-        });
 
         new ol.layer.Vector({
             map: map,
@@ -541,36 +498,40 @@
             map.addLayer(global.featureOverlay);
         }
 
-
+        function zoomToGPS() {
+            if (global.gpscoord == null) {
+                alert('GPS location not found');
+                return;
+            }
+            view.setCenter(global.gpscoord);
+            view.setZoom(18);
+        }
 
         function doTrackGPS() {
 
-            
-
             var onSuccess = function (position) {
-                parent.endLoadingBox();
+
                 
                 var lat = parseFloat(position.coords.latitude);
                 var lng = parseFloat(position.coords.longitude);
                 var coord = ol.proj.transform([lng, lat], 'EPSG:4326', 'EPSG:900913');
                 var point = new ol.geom.Point(coord);
+                console.log('gps: ' + coord);
 
                 positionFeature.setGeometry(point);
+                global.gpscoord = coord;
 
-
-                view.setCenter(coord);
-                view.setZoom(18);
             };
 
             function onError(error) {
+                /*
                 parent.endLoadingBox()
                 alert('code: ' + error.code + '\n' +
                       'message: ' + error.message + '\n');
+                */
             }
 
-            parent.startLoadingBox('Finding location..');
-            navigator.geolocation.getCurrentPosition(onSuccess, onError);
-
+            navigator.geolocation.watchPosition(onSuccess, onError, { enableHighAccuracy: true });
         }
 
         global.overlayFeatures = new ol.Collection();
@@ -788,8 +749,11 @@
 
         LoadParcels();
 
+        if (parent.onMapReady != null) {
+            parent.onMapReady();
+        }
 
-        parent.onMapReady();
+        doTrackGPS();
 
         // $('#track').trigger('click');
 
