@@ -531,8 +531,6 @@ under the License.
 
         $(document).ready(function () {
 
-            startLoadingBox("start");
-
             var user = localStorage.getItem('scout').toUpperCase();
             $('#inputEmail').val(user);
 
@@ -780,8 +778,7 @@ under the License.
 
         function onMapReady() {
             // $('#layer_36822').trigger('click');
-
-            endLoadingBox();
+           
         }
 
         function startLoadingBox(caption) {
@@ -795,6 +792,13 @@ under the License.
         function doSubmit() {
             localStorage.setItem('scout', $('#inputEmail').val().toUpperCase());
             $('#mainViewButton').trigger('click');
+            startLoadingBox();
+            setTimeout(function () {
+                var mapframe = window.frames['olmap'];
+                mapframe.LoadParcels();
+                endLoadingBox();
+            }, 500);
+
             return false;
         }
 

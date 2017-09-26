@@ -503,6 +503,7 @@
                 alert('GPS location not found');
                 return;
             }
+
             view.setCenter(global.gpscoord);
             view.setZoom(18);
         }
@@ -722,19 +723,14 @@
             view.fit(global.zoomExtent);
             if (view.getZoom() > 18)
                 view.setZoom(18);
-
-        }
+       }
 
 
         function LoadParcels() {
 
             var json = localStorage.getItem('parcels');
             if (json == null) {
-                $.getJSON("data/parcels.json", function (data) {
-                    LoadParcelJSON(data);
-                }).fail(function () {
-                    alert("Failed to load parcels");
-                });
+                alert('No Parcels loaded, please sync.');
             }
             else {
                 LoadParcelJSON(JSON.parse(json));
@@ -747,13 +743,15 @@
 
         }
 
-        LoadParcels();
+        
+
+        doTrackGPS();
 
         if (parent.onMapReady != null) {
             parent.onMapReady();
         }
 
-        doTrackGPS();
+        
 
         // $('#track').trigger('click');
 
