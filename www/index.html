@@ -518,8 +518,8 @@ under the License.
             var dellist = getDelList();
 
             //
-            //   $.ajax(url + '?mode=sync&scout=' + scout + '&json=' + json + '&version=1&dellist=' + escape(dellist))
-             $.post(url, { mode: 'sync', scout: scout, json: json, version: 2, dellist: dellist })
+            // $.ajax(url + '?mode=sync&scout=' + escape(scout) + '&json=' + escape(json) + '&version=2&dellist=' + escape(dellist))
+            $.post(url, { mode: 'sync', scout: scout, json: json, version: 2, dellist: dellist })
             .done(function (data) {
                 var json = JSON.parse(data);
                 if (json.success == true) {
@@ -572,7 +572,9 @@ under the License.
                 
 
                 var scout = localStorage.getItem('scout').toUpperCase();
-                var json = localStorage.getItem('parcels');
+                var json = localStorage.getItem('parcels2');
+                if (json == null)
+                    json = '{"success":true,"message":"","features":[] }';
                 global.syncData = JSON.parse(json);
                 global.synFeatures = global.syncData.features;
                 doSyncPhotos();
