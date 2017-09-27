@@ -30,6 +30,8 @@
     <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.2" />
     <plugin name="cordova-plugin-vibration" source="npm" spec="~2.1.0" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
+    <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" source="npm" />
+      
     <platform name="android">
 		<icon density="ldpi" src="www/res/icons/android/ldpi.png" />
         <icon density="mdpi" src="www/res/icons/android/mdpi.png" />

@@ -236,6 +236,14 @@ under the License.
 
             global.atts = atts;
 
+            $('#btnNavParcel').off();
+            $('#btnNavParcel').click(function () {
+                var mapframe = window.frames['olmap'];
+                mapframe.navToParcel();
+            });
+
+
+
 
             $('#btnDelCap').off();
             $('#btnDelCap').click(function () {
@@ -981,6 +989,11 @@ under the License.
                 <label for="giskey">GIS Key:</label>
                 <input type="text" readonly="readonly" id="giskey" />
             </div>
+
+            <div id="divNavParcel">
+                <a id="btnNavParcel" data-role="button" data-icon="delete" class="">Navigate to Parcel</a>
+            </div>
+
 
 
             <table style="width: 100%">

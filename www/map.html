@@ -118,8 +118,8 @@
             layers: [
                 // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
                 // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/{z}/{x}/{y}.png' }), visible: true })
-                new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
-				// new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/gh_{x}_{y}_{z}.jpg' }), visible: true })
+                // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
+				new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/gh_{x}_{y}_{z}.jpg' }), visible: true })
 				
                 
             ],
@@ -245,6 +245,23 @@
 
             // addNewFeature(feature);
             
+
+        }
+
+        function navToParcel() {
+            var geom = global.editFeature.getGeometry();
+            var extent = geom.getExtent();
+            var center = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
+            var coord = ol.proj.transform(center, 'EPSG:900913', 'EPSG:4326');
+            alert(coord);
+
+            launchnavigator.navigate([50.279306, -5.163158]);
+
+            alert('ok?');
+
+
+
+
 
         }
 
@@ -639,7 +656,7 @@
             var fillOpacity = 0.3;
             var strokeColor = '#227b23';
             var strokeOpacity = 1.0;
-            var strokeWeight = 1.0;
+            var strokeWeight = 2.0;
             var strokePattern = null;
 
             var color = 'rgba(255, 255, 0, 0.1)';
@@ -657,7 +674,7 @@
                     color: color
                 }),
                 stroke: new ol.style.Stroke({
-                    color: '#ff0000',
+                    color: 'rgba(243,243,21, 1.0)',
                     width: strokeWeight,
                     lineDash: strokePattern,
                     
