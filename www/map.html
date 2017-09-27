@@ -253,7 +253,7 @@
             var extent = geom.getExtent();
             var center = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
             var coord = ol.proj.transform(center, 'EPSG:900913', 'EPSG:4326');
-            parent.testNav(coord);
+            parent.testNav([coord[1], coord[0]]);
         }
 
 
