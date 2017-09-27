@@ -810,7 +810,7 @@ under the License.
             return false;
         }
 
-        function testNav() {
+        function testNav(coord) {
             alert('tn');
 
             alert(launchnavigator)
@@ -818,7 +818,7 @@ under the License.
                 alert(launchnavigator.navigate);
 
 
-            launchnavigator.navigate([50.279306, -5.163158]);
+            launchnavigator.navigate(coord);
 
 
             alert('ok?');
@@ -855,7 +855,7 @@ under the License.
                 <input type="text" id="inputEmail" class="form-control" placeholder="user code" required autofocus  style="text-transform:uppercase">
                 <br />
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-                <a href="#" onclick="testNav();">Test nav</a>
+                <a href="#" onclick="testNav([50.279306, -5.163158]);">Test nav</a>
                   
               </form>
 
