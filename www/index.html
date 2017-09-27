@@ -131,6 +131,18 @@ under the License.
 
         app.initialize();
 
+        function initMapPage() {
+
+            var mapframe = window.frames['olmap'];
+            if (mapframe == null || mapframe.LoadParcels == null) {
+                setTimeout(initMapPage, 100);
+                return;
+            }
+            mapframe.LoadParcels();
+            endLoadingBox();
+        }
+
+
 
         function addPoint(lng, lat) {
             var point = {
@@ -546,6 +558,11 @@ under the License.
 
             var d = new Date();
 
+            $(document).on("pageinit", "#MainView", function (event) {
+                startLoadingBox();
+                setTimeout(initMapPage, 1000);
+            });
+
             $('#syncButton').click(function () {
 
                 
@@ -800,13 +817,6 @@ under the License.
         function doSubmit() {
             localStorage.setItem('scout', $('#inputEmail').val().toUpperCase());
             $('#mainViewButton').trigger('click');
-            startLoadingBox();
-            setTimeout(function () {
-                var mapframe = window.frames['olmap'];
-                mapframe.LoadParcels();
-                endLoadingBox();
-            }, 500);
-
             return false;
         }
 
@@ -985,6 +995,11 @@ under the License.
         <div role="main" class="ui-content">
             <a id="showMapButton" href="#MainView" data-transition="slideDown" class="hidden" style="display: none; visibility: hidden">Go Main Page</a>
 
+            <div id="divNavParcel">
+                <a id="btnNavParcel" data-role="button" data-icon="navigation" class="">Navigate to Parcel</a>
+            </div>
+
+
             <div id="btnDelCapDiv">
                 <a id="btnDelCap" data-role="button" data-icon="delete" class="">Delete Capture</a>
             </div>
@@ -994,9 +1009,6 @@ under the License.
                 <input type="text" readonly="readonly" id="giskey" />
             </div>
 
-            <div id="divNavParcel">
-                <a id="btnNavParcel" data-role="button" data-icon="delete" class="">Navigate to Parcel</a>
-            </div>
 
 
 

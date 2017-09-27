@@ -364,14 +364,59 @@
             }
         }
 
+        function findFeatureAtCoord(coord) {
+            var source = global.featureOverlay.getSource();
+            var features = source.getFeatures();
+            for (var f in features) {
+                var feature = features[f];
+                var geom = feature.getGeometry();
+                if (geom.intersectsCoordinate(coord)) {
+                    return feature;
+                }
+            }
+            return null;
+        }
+
+
+
+
 
         map.on('singleclick', function (evt) {
+
+
             global.newFeature = null;
             global.editFeature = null;
             global.clickCoord = evt.coordinate;
-            setTimeout(testNoneClicked, 200);
-            return;
 
+            global.editFeature = findFeatureAtCoord(global.clickCoord);
+            if (global.editFeature == null) {
+                // create new feature
+
+                var coord = global.clickCoord;
+                var x = coord[0];
+                var y = coord[1];
+                var s = 4;
+
+                var wkt = 'POLYGON ((';
+                wkt += (x - s) + ' ' + (y) + ',';
+                wkt += (x) + ' ' + (y - s) + ',';
+                wkt += (x + s) + ' ' + (y) + ',';
+                wkt += (x) + ' ' + (y + s) + ',';
+                wkt += (x - s) + ' ' + (y) + '))';
+
+                var scout = localStorage.getItem('scout').toUpperCase();
+                var feature = {
+                    wkt: wkt, atts: { ID: 0, GIS_KEY: '', guid: genguid(), scout: scout }
+                };
+
+                global.parcels.features.push(feature);
+                LoadParcelJSON(global.parcels);
+                global.newFeature = global.lastFeature;
+                global.editFeature = global.lastFeature;
+            }
+            parent.editPoint(global.editFeature.atts);
+            return;
+/***
             if (global.skipClick == true) {
                 global.skipClick = false;
                 return;
@@ -479,6 +524,7 @@
             if (feature)
                 id = feature.o.id;
             parent.editPoint(id, lng, lat);
+***/
         });
 
 
@@ -577,6 +623,7 @@
         map.addLayer(global.featureOverlay);
 
 
+        /*
         global.interaction = new ol.interaction.Select({
             filter: function (feature, layer) {
                 if (feature.dragbox == true)
@@ -585,6 +632,7 @@
             },
             condition: ol.events.condition.mouseMove
         });
+        */
 
         function cancelNewFeature() {
             debugger;
@@ -592,6 +640,7 @@
                 delActiveFeature();
         }
 
+        /*
         function testNoneClicked() {
             if (global.editFeature == null) {
                 var coord = global.clickCoord;
@@ -637,6 +686,7 @@
         });
 
         map.addInteraction(global.interaction);
+        */
 
 
         function createFeature(type, wkt, atts) {
@@ -713,6 +763,8 @@
                 minY = Math.min(minY, extent[1]);
                 maxX = Math.max(maxX, extent[2]);
                 maxY = Math.max(maxY, extent[3]);
+
+                newFeature.fextent = extent;
 
                 global.featureOverlay.getSource().addFeature(newFeature);
                 global.lastFeature = newFeature;
