@@ -411,11 +411,13 @@ under the License.
         function TrackGPS() {
             var mapframe = window.frames['olmap'];
             mapframe.zoomToGPS();
+            $('#toolBox').popup('close');
         }
 
         function zoomToParcels() {
             var mapframe = window.frames['olmap'];
             mapframe.zoomToParcels();
+            $('#toolBox').popup('close');
         }
 
         function updateVacant() {
