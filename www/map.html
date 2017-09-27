@@ -255,7 +255,13 @@
             var coord = ol.proj.transform(center, 'EPSG:900913', 'EPSG:4326');
             alert(coord);
 
+            alert(launchnavigator)
+            if (launchnavigator)
+                alert(launchnavigator.navigate);
+
+
             launchnavigator.navigate([50.279306, -5.163158]);
+
 
             alert('ok?');
 
