@@ -813,7 +813,7 @@
 
                 var style = function (feature) {
                     var zoom = map.getView().getZoom();
-                    if (zoom < 18)
+                    if (zoom < 16)
                         return null;
 
                     var font_size = Math.pow(zoom - 15, 2); // arbitrary value
