@@ -591,6 +591,7 @@
 
         global.overlayFeatures = new ol.Collection();
 
+
         global.featureOverlay = new ol.layer.Vector({
             source: new ol.source.Vector({ features: global.overlayFeatures }),
             style: new ol.style.Style({
@@ -621,6 +622,8 @@
         });
         
         map.addLayer(global.featureOverlay);
+
+
 
 
         /*
@@ -785,8 +788,66 @@
                 view.setZoom(18);
        }
 
+        function loadAddresses() {
+            var url = 'data/strnum.json';
+            
+
+
+
+
+            $.ajax(url)
+            .done(function (text) {
+                var data = JSON.parse(text);
+                var strnums = data.sn;
+
+                var features = [];
+
+                for (var a in strnums) {
+                    var addr = strnums[a];
+                    var coord = ol.proj.transform([addr[0], addr[1]], 'EPSG:4326', 'EPSG:900913');
+                    var geom = new ol.geom.Point(coord);
+                    var feature = new ol.Feature(geom);
+                    feature.label = addr[2];
+                    features.push(feature);
+                }
+
+                var style = function (feature) {
+                    var zoom = map.getView().getZoom();
+                    if (zoom < 18)
+                        return null;
+
+                    var font_size = Math.pow(zoom - 15, 2); // arbitrary value
+                    return [
+                      new ol.style.Style({
+                          text: new ol.style.Text({
+                              font: font_size + 'px Arial',
+                              fill: new ol.style.Fill({ color: '#ff0000' }),
+                              stroke: new ol.style.Stroke({
+                                  color: '#ffffff', width: 2
+                              }),
+                              text: feature.label
+                          })
+                      })
+                    ];
+                };
+
+                // add address layer
+                global.addressOverlay = new ol.layer.Vector({
+                    source: new ol.source.Vector({ features: features }),
+                    style: style
+                });
+
+                map.addLayer(global.addressOverlay);
+
+            })
+            .fail(function () {
+                alert('afail');
+                return;
+            })
+        }
 
         function LoadParcels() {
+
 
             var json = localStorage.getItem('parcels');
             if (json == null) {
@@ -803,7 +864,8 @@
 
         }
 
-        
+        loadAddresses();
+
 
         doTrackGPS();
 
