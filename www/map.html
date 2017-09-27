@@ -81,11 +81,18 @@
 
         var baseLayers = [];
 
-        baseLayers['MQO_STD'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true });
-        baseLayers['MQO_HBR'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true });
+        baseLayers['GOG_OFL'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/gh_{x}_{y}_{z}.jpg' }), visible: true });
         baseLayers['OSM_STD'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true });
-        baseLayers['OSM_CYL'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png' }) });
-        baseLayers['OSM_TRN'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://{a-c}.tile.thunderforest.com/transport/{z}/{x}/{y}.png' }) });
+        baseLayers['GOG_HYB'] = new ol.layer.Tile({ source: new ol.source.XYZ({ 'url': 'http://mt{1-3}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' }) });
+
+        function selectBaseLayer(id) {
+            debugger;
+            var layer = baseLayers[id];
+            var layers = map.getLayers();
+            layers.removeAt(0);
+            layers.insertAt(0, layer);
+//            alert(id);
+        }
 
         var version = 101;
 
@@ -114,6 +121,8 @@
             zoom: fMapZoomLevel
         });
 
+        var interactions = ol.interaction.defaults({ altShiftDragRotate: false, pinchRotate: false });
+
         var map = new ol.Map({
             layers: [
                 // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
@@ -124,11 +133,8 @@
                 
             ],
             target: 'map',
-            controls: ol.control.defaults({
-                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                    collapsible: false
-                })
-            }),
+            interactions: interactions,
+            controls: [ ],
             view: view
         });
         global.map = map;

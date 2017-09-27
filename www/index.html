@@ -880,34 +880,16 @@ under the License.
             <a id="syncButton" data-role="button"  data-icon="refresh"  class="ui-btn-left">Sync</a>
             <a href="#layerBox" id="layerBoxButton" data-rel="popup" data-role="button" data-inline="true" data-icon="bars" data-transition="pop" class="ui-btn-right">Layers</a>
             <div data-role="popup" id="layerBox" data-theme="none" style="width: 300px">
-                <div data-role="collapsible-set" data-theme="c" data-content-theme="d">
-                    <div data-role="collapsible" data-collapsed="true" style="background-color: white; padding: 0px">
-                        <h4>Base Layers</h4>
-                        <fieldset data-role="controlgroup">
+                <fieldset data-role="controlgroup">
 
-                            <input type="radio" name="radio-choice" id="MQO_STD" class="baseLayerSelect" checked="checked" />
-                            <label for="MQO_STD">MapQuest Open</label>
-                            <input type="radio" name="radio-choice" id="OSM_STD" class="baseLayerSelect" />
-                            <label for="OSM_STD">OSM - Standard</label>
-                            <input type="radio" name="radio-choice" id="OSM_CYL" class="baseLayerSelect" />
-                            <label for="OSM_CYL">OSM - Cycle Map</label>
-                            <input type="radio" name="radio-choice" id="OSM_TRN" class="baseLayerSelect" />
-                            <label for="OSM_TRN">OSM - Transport</label>
-                        </fieldset>
-                    </div>
-                    <div data-role="collapsible" data-collapsed="false" style="background-color: white; padding: 0px">
-                        <h4>Overlays</h4>
-                        <fieldset data-role="controlgroup">
-                            <label for="layer_36822">Active parcels</label><input type="checkbox" name="check-choice" id="layer_36822" class="layerSelect" />
-                            <label for="layer_36820">Servitude areas</label><input type="checkbox" name="check-choice" id="layer_36820" class="layerSelect" />
-                            <label for="layer_36821">Servitude lines</label><input type="checkbox" name="check-choice" id="layer_36821" class="layerSelect" />
-                            <label for="layer_36818">EMM Boundary</label><input type="checkbox" name="check-choice" id="layer_36818" class="layerSelect" />
-                            <label for="layer_36819">Customer Care Areas</label><input type="checkbox" name="check-choice" id="layer_36819" class="layerSelect" />
-                            <label for="layer_36824">Sectional Title Units</label><input type="checkbox" name="check-choice" id="layer_36824" class="layerSelect" />
-                            <label for="layer_36876">Addresses</label><input type="checkbox" name="check-choice" id="layer_36876" class="layerSelect" />
-                        </fieldset>
-                    </div>
-                </div>
+                    <input type="radio" name="radio-choice" id="GOG_OFL" class="baseLayerSelect" checked="checked" />
+                    <label for="GOG_OFL">Offline Maps</label>
+                    <input type="radio" name="radio-choice" id="OSM_STD" class="baseLayerSelect" />
+                    <label for="OSM_STD">OSM - Standard</label>
+                    <input type="radio" name="radio-choice" id="GOG_HYB" class="baseLayerSelect" />
+                    <label for="GOG_HYB">Google Hybrid</label>
+
+                </fieldset>
             </div>
 
         </div>
@@ -917,10 +899,10 @@ under the License.
             <h6>Copyright 2017</h6>
             <a href="#toolBox" id="A2" data-rel="popup" data-role="button" data-inline="true" data-icon="gear" data-transition="pop" class="ui-btn-left" style="top: -3px;">Tools</a>
             <div data-role="popup" id="toolBox" data-theme="none" >
-                <div data-role="content" data-theme="a">
+                <fieldset data-role="controlgroup">
                     <a onclick="TrackGPS();" data-role="button" data-icon="navigation" class="">Zoom to GPS</a>
                     <a onclick="zoomToParcels();" data-role="button" data-icon="search" class="">Zoom to Parcels</a>
-                </div>
+                </fieldset>
             </div>
 
             
