@@ -81,7 +81,7 @@
 
         var baseLayers = [];
 
-        baseLayers['GOG_OFL'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/gh_{x}_{y}_{z}.jpg' }), visible: true });
+        baseLayers['GOG_OFL'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/{x}_{y}_{z}.png' }), visible: true });
         baseLayers['OSM_STD'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true });
         baseLayers['GOG_HYB'] = new ol.layer.Tile({ source: new ol.source.XYZ({ 'url': 'http://mt{1-3}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' }) });
 
@@ -128,7 +128,7 @@
                 // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
                 // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/{z}/{x}/{y}.png' }), visible: true })
                 // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
-				new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/gh_{x}_{y}_{z}.jpg' }), visible: true })
+				new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/{x}_{y}_{z}.png' }), visible: true })
 				
                 
             ],
@@ -760,6 +760,8 @@
 
             global.featureOverlay.getSource().clear();
 
+            debugger;
+
 
             for (var f in features) {
                 var feature = features[f];
@@ -855,7 +857,10 @@
         function LoadParcels() {
             var json = localStorage.getItem('parcels2');
             if (json == null) {
-                json = '{"success":true,"message":"","features":[] }';
+                json = localStorage.getItem('parcels');
+                if (json == null) {
+                    json = '{"success":true,"message":"","features":[] }';
+                }
             }
             LoadParcelJSON(JSON.parse(json));
         }
