@@ -573,8 +573,12 @@ under the License.
 
                 var scout = localStorage.getItem('scout').toUpperCase();
                 var json = localStorage.getItem('parcels2');
-                if (json == null)
-                    json = '{"success":true,"message":"","features":[] }';
+                if (json == null) {
+                    json = localStorage.getItem('parcels');
+                    if (json == null) {
+                        json = '{"success":true,"message":"","features":[] }';
+                    }
+                }
                 global.syncData = JSON.parse(json);
                 global.synFeatures = global.syncData.features;
                 doSyncPhotos();
