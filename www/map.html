@@ -81,7 +81,21 @@
 
         var baseLayers = [];
 
-        baseLayers['GOG_OFL'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/{x}_{y}_{z}.png' }), visible: true });
+        var tileUrlFunction = function (tileCoord, pixelRatio, projection) {
+           
+            var x = tileCoord[1];
+            var y = -tileCoord[2] - 1;
+            var z = tileCoord[0];
+
+
+            return 'kempton/' + x.toString() + '_' + y.toString() + '_' + z.toString() + '.png';
+        }
+
+        baseLayers['GOG_OFL'] = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                tileUrlFunction: tileUrlFunction
+            })
+        });
         baseLayers['OSM_STD'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true });
         baseLayers['GOG_HYB'] = new ol.layer.Tile({ source: new ol.source.XYZ({ 'url': 'http://mt{1-3}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' }) });
 
@@ -123,14 +137,11 @@
 
         var interactions = ol.interaction.defaults({ altShiftDragRotate: false, pinchRotate: false });
 
+
+
         var map = new ol.Map({
             layers: [
-                // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
-                // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/{z}/{x}/{y}.png' }), visible: true })
-                // new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true })
-				new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'kempton/{x}_{y}_{z}.png' }), visible: true })
-				
-                
+				baseLayers['GOG_OFL']
             ],
             target: 'map',
             interactions: interactions,

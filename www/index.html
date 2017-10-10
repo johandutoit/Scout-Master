@@ -553,12 +553,34 @@ under the License.
             doMainSync();
         }
 
+        function errorHandler(a, b, c, d) {
+            alert('failed');
+
+        }
+
+
+        function testDatabase() {
+            alert(1);
+            var db = PGSQLitePlugin('kempton.db', '3.0', 'offline tiles', 1024 * 1024);
+            alert(2);
+
+            db.transaction(function (transaction) {
+                transaction.executeSql('SELECT * FROM tbltile', [], function (trx, result) {
+                    for (var i = 0; i < result.rows.length; i++) {
+                        alert(3);
+                    }
+                }, errorHandler);
+            });
+        }
+
         $(document).ready(function () {
 
             var user = localStorage.getItem('scout').toUpperCase();
             $('#inputEmail').val(user);
 
             initEditPage();
+            testDatabase();
+
 
             var d = new Date();
 

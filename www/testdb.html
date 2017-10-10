@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="jquerymobile/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="jquerymobile/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" src="data.js?v=2"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+
+    <script type="text/javascript">
+
+        function errorHandler(a, b, c, d) {
+            alert('failed');
+
+        }
+
+        $(document).ready(function () {
+
+            alert(1);
+            var db = PGSQLitePlugin('kempton.db', '3.0', 'offline tiles', 1024 * 1024);
+            alert(2);
+
+            db.transaction(function (transaction) {
+                transaction.executeSql('SELECT * FROM tbltile', [], function (trx, result) {
+                    for (var i = 0; i < result.rows.length; i++) {
+                        alert(3);
+                    }
+                }, errorHandler);
+            });
+
+            debugger;
+
+        });
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
