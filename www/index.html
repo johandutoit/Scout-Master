@@ -409,6 +409,7 @@ under the License.
         }
 
         function TrackGPS() {
+            testDatabase();
             var mapframe = window.frames['olmap'];
             mapframe.zoomToGPS();
             $('#toolBox').popup('close');
@@ -579,7 +580,7 @@ under the License.
             $('#inputEmail').val(user);
 
             initEditPage();
-            testDatabase();
+            
 
 
             var d = new Date();
