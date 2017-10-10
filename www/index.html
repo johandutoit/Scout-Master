@@ -561,7 +561,7 @@ under the License.
 
         function testDatabase() {
             alert(1);
-            var db = PGSQLitePlugin('kempton.db', '3.0', 'offline tiles', 1024 * 1024);
+            var db = window.sqlitePlugin.openDatabase({ name: "kempton.db" });
             alert(2);
 
             db.transaction(function (transaction) {
