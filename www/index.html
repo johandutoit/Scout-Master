@@ -563,7 +563,7 @@ under the License.
         function testDatabase() {
             alert(window.sqlitePlugin);
             try {
-                var db = window.sqlitePlugin.openDatabase({ name: "kempton.db", iosDatabaseLocation: 'default' });
+                var db = window.sqlitePlugin.openDatabase({ name: "kempton2.db", iosDatabaseLocation: 'default', createFromLocation: 1 });
                 // var db = window.openDatabase( "kempton.db", '3.0', 'test', 1024 );
                 
                 var query = 'SELECT data FROM tbltile WHERE x = 1184 AND y = 1178 AND z = 11;';
