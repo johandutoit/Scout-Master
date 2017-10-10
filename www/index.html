@@ -556,7 +556,7 @@ under the License.
 
         function errorHandler(a, b, c, d) {
             alert('failed');
-
+            alert(b.message);
         }
 
 
@@ -564,6 +564,7 @@ under the License.
             alert(window.sqlitePlugin);
             try {
                 var db = window.sqlitePlugin.openDatabase({ name: "kempton.db", iosDatabaseLocation: 'default' });
+                // var db = window.openDatabase( "kempton.db", '3.0', 'test', 1024 );
                 alert(2);
 
                 db.transaction(function (transaction) {
