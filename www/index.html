@@ -565,10 +565,13 @@ under the License.
             try {
                 var db = window.sqlitePlugin.openDatabase({ name: "kempton.db", iosDatabaseLocation: 'default' });
                 // var db = window.openDatabase( "kempton.db", '3.0', 'test', 1024 );
-                alert(2);
+                
+                var query = 'SELECT data FROM tbltile WHERE x = 1184 AND y = 1178 AND z = 11;';
+                alert(query);
+                
 
                 db.transaction(function (transaction) {
-                    transaction.executeSql('SELECT * FROM tbltile', [], function (trx, result) {
+                    transaction.executeSql(query, [], function (trx, result) {
                         for (var i = 0; i < result.rows.length; i++) {
                             alert(3);
                         }
