@@ -31,7 +31,7 @@
     <plugin name="cordova-plugin-vibration" source="npm" spec="~2.1.0" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
     <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="3" />
-    <plugin name="cordova-sqlite-ext" spec="~0.8.5" />
+    <plugin name="cordova-sqlite-ext" spec="0.10.3" />
       
     <platform name="android">
 		<icon density="ldpi" src="www/res/icons/android/ldpi.png" />
