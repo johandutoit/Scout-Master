@@ -409,7 +409,6 @@ under the License.
         }
 
         function TrackGPS() {
-            testDatabase();
             var mapframe = window.frames['olmap'];
             mapframe.zoomToGPS();
             $('#toolBox').popup('close');
@@ -559,8 +558,66 @@ under the License.
             alert(b.message);
         }
 
+        function dump(obj) {
+            console.log(JSON.stringify(obj));
+        }
+
+        function getFilesList(callback) {
+            console.log('getFilesList');
+            var fileList = [];
+
+            function onDirResolved(dir) {
+                dump(dir);
+
+                var reader = dir.createReader();
+                reader.readEntries(function (entries) {
+                    console.log('readEntries');
+                    for (var i = 0; i < entries.length; i++) {
+                        if (entries[i].name.indexOf(".fototoon") != -1) {
+                            fileList.push(entries[i].fullPath);
+                        };
+                    };
+                    console.log('fileList ' + fileList);
+                    callback(fileList);
+                }, errorHandler);
+            };
+
+            function onFsResolved(fs) {
+            };
+
+            alert(cordova.file.applicationDirectory);
+
+        };
+
+        function mycallback(data) {
+            alert(data.length);
+
+        }
+
+        function listDir(path) {
+            window.resolveLocalFileSystemURL(path,
+              function (fileSystem) {
+                  var reader = fileSystem.createReader();
+                  reader.readEntries(
+                    function (entries) {
+                        dump(entries);
+                    },
+                    function (err) {
+                        dump(err);
+                    }
+                  );
+              }, function (err) {
+                  dump(err);
+              }
+            );
+        }
 
         function testDatabase() {
+
+            listDir(cordova.file.applicationDirectory + "www/kempton/");
+
+//            getFilesList(mycallback);
+/*
             alert(window.sqlitePlugin);
             try {
                 var db = window.sqlitePlugin.openDatabase({ name: "kempton2.db", iosDatabaseLocation: 'default', createFromLocation: 1 });
@@ -581,6 +638,7 @@ under the License.
             catch (e) {
                 alert(e);
             }
+*/
         }
 
         $(document).ready(function () {
@@ -950,7 +1008,7 @@ under the License.
 
 
 
-            <a href="#divHelp" id="A1" data-role="button" data-icon="info" class="ui-btn-right" style="top: -3px">Help</a>
+            <a href="#divHelp" onclick="navigator.app.exitApp();" id="A1" data-role="button" data-icon="info" class="ui-btn-right" style="top: -3px">Help</a>
         </div>
 
         <a href="#popupDialog" id="popupDialogButton" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b" style="display: none;">Point Information</a>
