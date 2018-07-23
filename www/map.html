@@ -82,13 +82,17 @@
         var baseLayers = [];
 
         var tileUrlFunction = function (tileCoord, pixelRatio, projection) {
+
+            debugger;
            
             var x = tileCoord[1];
             var y = -tileCoord[2] - 1;
             var z = tileCoord[0];
 
 
-            return 'kempton/gh_' + x.toString() + '_' + y.toString() + '_' + z.toString() + '.png';
+            var url = 'mclu/' + x.toString() + '/gm_' + x.toString() + '_' + y.toString() + '_' + z.toString() + '.png';
+
+            return url;
         }
 
         baseLayers['GOG_OFL'] = new ol.layer.Tile({
@@ -141,9 +145,7 @@
 
 
         var map = new ol.Map({
-            layers: [
-				baseLayers['GOG_HYB']
-            ],
+            layers: baseLayers,
             target: 'map',
             interactions: interactions,
             controls: [ ],
