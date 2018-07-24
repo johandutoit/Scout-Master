@@ -496,9 +496,7 @@ under the License.
         }
 
         function doMainSync() {
-
-            alert('sm1');
-            
+           
             var scout = localStorage.getItem('scout').toUpperCase();
             var flist = [];
             var features = global.syncData.features;
@@ -511,8 +509,6 @@ under the License.
 
             var json = JSON.stringify(global.syncData);
 
-            alert('sm2');
-
             startLoadingBox("Syncing...");
 
              // var url = 'http://localhost/mapable/mapdn/survey.aspx'
@@ -520,8 +516,6 @@ under the License.
 
 
             var dellist = getDelList();
-
-            alert('sm3');
 
             //
             // $.ajax(url + '?mode=sync&scout=' + escape(scout) + '&json=' + escape(json) + '&version=2&dellist=' + escape(dellist))
@@ -546,7 +540,6 @@ under the License.
         }
 
         function doSyncPhotos() {
-            alert('sp1');
             var features = global.synFeatures;
             for (var f in features) {
                 var feature = features[f];
@@ -557,7 +550,6 @@ under the License.
                     return;
                 }
             }
-            alert('sp2');
             doMainSync();
         }
 
@@ -667,14 +659,9 @@ under the License.
 
             $('#syncButton').click(function () {
 
-                alert('s1');
-
-                
 
                 var scout = localStorage.getItem('scout').toUpperCase();
                 var json = localStorage.getItem('parcels2');
-
-                alert('s2');
 
                 if (json == null) {
                     json = localStorage.getItem('parcels');
@@ -685,7 +672,6 @@ under the License.
                 global.syncData = JSON.parse(json);
                 global.synFeatures = global.syncData.features;
 
-                alert('s3');
                 doSyncPhotos();
 
 
