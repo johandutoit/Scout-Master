@@ -74,10 +74,12 @@
             return null;
         }
 
+        
+        
 
-        var fMapCenterX = 28.23612871648651;
-        var fMapCenterY = -26.09707121506439;
-        var fMapZoomLevel = 17;
+        var fMapCenterX = 27.847595214843732;
+        var fMapCenterY = -36.249083096330672;
+        var fMapZoomLevel = 10;
 
         var baseLayers = [];
 
@@ -104,12 +106,15 @@
         baseLayers['OSM_STD'] = new ol.layer.Tile({ source: new ol.source.OSM({ 'url': 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' }), visible: true });
         baseLayers['GOG_HYB'] = new ol.layer.Tile({ source: new ol.source.XYZ({ 'url': 'http://mt{1-3}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' }) });
 
+        
+
         function selectBaseLayer(id) {
             debugger;
             var layer = baseLayers[id];
             var layers = map.getLayers();
-            layers.removeAt(0);
-            layers.insertAt(0, layer);
+            layers.clear();
+            map.addLayer(layer);
+            map.addLayer(global.featureOverlay);
 //            alert(id);
         }
 
@@ -550,6 +555,8 @@
 
 
         function toggleLayer(id) {
+            debugger;
+
             var map = global.map;
             map.removeLayer(global.featureOverlay);
             var layerID = id.substr(6);
@@ -570,6 +577,7 @@
                 map.addLayer(layer);
             }
             map.addLayer(global.featureOverlay);
+            debugger;
         }
 
         function zoomToGPS() {
@@ -640,11 +648,8 @@
                 })
             })
         });
-        
-        map.addLayer(global.featureOverlay);
 
-
-
+        selectBaseLayer('GOG_OFL');
 
         /*
         global.interaction = new ol.interaction.Select({
@@ -796,10 +801,11 @@
 
             }
 
-            var extent = [minX, minY, maxX, maxY];
-            global.zoomExtent = extent;
-            zoomToParcels();
-            
+            if (minX < 1e90) {
+                var extent = [minX, minY, maxX, maxY];
+                global.zoomExtent = extent;
+                zoomToParcels();
+            }
 
             saveFeatureJSON();
         }
@@ -811,6 +817,8 @@
        }
 
         function loadAddresses() {
+            return;
+
             var url = 'data/strnum.json';
             
 
